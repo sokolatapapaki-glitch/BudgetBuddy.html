@@ -52,11 +52,10 @@
     position: relative;
   }
 
-  /* ΝΕΟ: ΚΟΥΜΠΙ ΣΥΝΔΕΣΗΣ ΜΕΣΑ ΣΤΟΝ ΤΙΤΛΟ - ΠΟΛΥ ΕΜΦΑΝΕΣ! */
   .sync-header {
     position: relative;
     display: inline-block;
-    padding-right: 50px; /* Χώρος για το κουμπί */
+    padding-right: 50px;
   }
   
   .sync-button-header {
@@ -83,7 +82,6 @@
     transform: translateY(-50%) scale(1.05);
   }
   
-  /* ΜΕΓΑΛΟ ΚΟΥΜΠΙ ΣΤΗΝ ΚΟΡΥΦΗ */
   .big-sync-button {
     position: fixed;
     top: 20px;
@@ -109,7 +107,6 @@
     box-shadow: 0 6px 15px rgba(0,0,0,0.3);
   }
   
-  /* ΣΤΑΤΟΥΣ ΣΥΓΧΡΟΝΙΣΜΟΥ */
   .sync-status-dot {
     display: inline-block;
     width: 12px;
@@ -128,7 +125,42 @@
     50% { opacity: 0.5; }
   }
   
-  /* Modal */
+  .code-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 3000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .code-modal-content {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+  }
+  
+  .code-display {
+    font-size: 42px;
+    font-weight: bold;
+    letter-spacing: 5px;
+    color: #e91e63;
+    background: #ffe6f1;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+    font-family: monospace;
+  }
+  
   .sync-modal {
     display: none;
     position: fixed;
@@ -348,7 +380,6 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
 
-  /* ΜΕΛΗ ΣΥΝΔΕΔΕΜΕΝΑ */
   .connected-users {
     margin: 15px 0;
     padding: 10px;
@@ -404,6 +435,11 @@
       margin-right: auto;
     }
     
+    .code-display {
+      font-size: 32px;
+      padding: 15px;
+    }
+    
     input, select, button {
       margin-bottom: 8px;
       width: 100%;
@@ -435,7 +471,6 @@
   }
 </style>
 
-<!-- Βιβλιοθήκες -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
@@ -444,14 +479,42 @@
 
 <div class="stars" id="stars"></div>
 
-<!-- ΜΕΓΑΛΟ ΚΟΥΜΠΙ ΣΥΝΔΕΣΗΣ (πάνω δεξιά) -->
+<!-- ΜΕΓΑΛΟ ΚΟΥΜΠΙ ΣΥΝΔΕΣΗΣ -->
 <button class="big-sync-button" onclick="showSyncModal()" id="mainSyncButton">
   🔗 ΣΥΓΧΡΟΝΙΣΜΟΣ
   <span class="sync-status-dot" id="mainSyncDot"></span>
 </button>
 
+<!-- MODAL ΓΙΑ ΕΜΦΑΝΙΣΗ ΚΩΔΙΚΟΥ -->
+<div class="code-modal" id="codeModal">
+  <div class="code-modal-content">
+    <h2 style="color: #e91e63;">🎉 ΔΗΜΙΟΥΡΓΗΘΗΚΕ ΝΕΟΣ ΠΡΟΥΠΟΛΟΓΙΣΜΟΣ!</h2>
+    <p>Ο κωδικός πρόσβασής σας είναι:</p>
+    
+    <div class="code-display" id="generatedCode"></div>
+    
+    <p style="color: #666; margin: 15px 0;">
+      <strong>📝 Σημείωση:</strong> Αυτός είναι ο μοναδικός σας κωδικός!<br>
+      Δώστε τον στον σύζυγο/σύζυγο για να συνδεθεί.
+    </p>
+    
+    <div style="display: flex; gap: 10px; margin: 20px 0;">
+      <button onclick="showQRForCode()" style="flex: 1; padding: 12px; background: #4caf50; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        📱 QR Code
+      </button>
+      <button onclick="copyGeneratedCode()" style="flex: 1; padding: 12px; background: #2196f3; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        📋 Αντιγραφή
+      </button>
+    </div>
+    
+    <button onclick="closeCodeModal()" style="width: 100%; padding: 12px; background: #e91e63; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px;">
+      ✅ Κατάλαβα, κλείσιμο
+    </button>
+  </div>
+</div>
+
+<!-- ΟΛΗ Η ΠΛΗΡΗΣ ΕΦΑΡΜΟΓΗ -->
 <div class="container">
-  <!-- ΤΙΤΛΟΣ ΜΕ ΚΟΥΜΠΙ -->
   <h1>
     <div class="sync-header">
       🌸 BudgetBuddy — Έξοδα Σπιτιού 🌸
@@ -462,13 +525,11 @@
     </div>
   </h1>
   
-  <!-- ΜΕΛΗ ΠΟΥ ΕΙΝΑΙ ΣΥΝΔΕΔΕΜΕΝΑ -->
   <div class="connected-users" id="connectedUsers" style="display: none;">
     <strong>Συνδεδεμένοι:</strong>
     <div id="usersList"></div>
   </div>
 
-  <!-- ΥΠΟΛΟΙΠΗ ΕΦΑΡΜΟΓΗ (ΑΚΡΙΒΩΣ ΙΔΙΑ) -->
   <div>
     <label>Μηνιαίο εισόδημα (€):</label>
     <input type="number" id="income" value="2000">
@@ -606,7 +667,7 @@
 </div>
 
 <script>
-// ==================== ΟΛΕΣ ΟΙ ΠΑΛΙΕΣ ΜΕΤΑΒΛΗΤΕΣ ====================
+// ==================== ΟΛΕΣ ΟΙ ΜΕΤΑΒΛΗΤΕΣ ====================
 let categories = JSON.parse(localStorage.getItem('cats') || '[]');
 let expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
 let recurringAmounts = JSON.parse(localStorage.getItem('recurringAmounts') || '{}');
@@ -619,26 +680,10 @@ let bankBalances = JSON.parse(localStorage.getItem('bankBalances') || JSON.strin
   expectedIncome: 0
 }));
 
-// ==================== ΣΥΓΧΡΟΝΙΣΜΟΣ ====================
 let syncData = JSON.parse(localStorage.getItem('budgetbuddy_sync') || '{}');
 let currentUser = syncData.userName || "Οικογένεια";
 let currentBudget = syncData.budgetCode || null;
 let firebaseRef = null;
-
-// Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyBaItM0-eOAwU6snAxfMU_bcp9xW0UfYzQ",
-  authDomain: "travelcosts-48d64.firebaseapp.com",
-  databaseURL: "https://travelcosts-48d64-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "travelcosts-48d64",
-  storageBucket: "travelcosts-48d64.firebasestorage.app",
-  messagingSenderId: "792639383940",
-  appId: "1:792639383940:web:ed991cc8426603015bd5d1"
-};
-
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(firebaseConfig);
-}
 
 // ==================== ΒΟΗΘΗΤΙΚΕΣ ΣΥΝΑΡΤΗΣΕΙΣ ====================
 function showQuickMessage(message, type = 'info') {
@@ -736,35 +781,69 @@ function initSync() {
     return;
   }
   
+  // Σύνδεση με Firebase
+  if (!firebase.apps.length) {
+    const firebaseConfig = {
+      apiKey: "AIzaSyBaItM0-eOAwU6snAxfMU_bcp9xW0UfYzQ",
+      authDomain: "travelcosts-48d64.firebaseapp.com",
+      databaseURL: "https://travelcosts-48d64-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "travelcosts-48d64",
+      storageBucket: "travelcosts-48d64.firebasestorage.app",
+      messagingSenderId: "792639383940",
+      appId: "1:792639383940:web:ed991cc8426603015bd5d1"
+    };
+    firebase.initializeApp(firebaseConfig);
+  }
+  
   const database = firebase.database();
   firebaseRef = database.ref(`budgets/${currentBudget}`);
   
   updateSyncUI('connecting');
   
+  // Ακούμε για αλλαγές
   firebaseRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data) {
-      // Βρήκαμε προϋπολογισμό
+      // Βρήκαμε προϋπολογισμό - ενημέρωση δεδομένων
       syncData.budgetName = data.name;
       syncData.creator = data.creator;
       syncData.members = data.members || [currentUser];
       
-      // Ενημέρωση τοπικών δεδομένων
-      categories = data.categories || [];
-      expenses = data.expenses || [];
-      recurringAmounts = data.recurringAmounts || {};
-      income = data.income || 2000;
-      bankBalances = data.bankBalances || bankBalances;
+      // Αποθήκευση τοπικά
+      localStorage.setItem('budgetbuddy_sync', JSON.stringify(syncData));
+      
+      // Ενημέρωση τοπικών δεδομένων ΑΝ δεν έχουμε τοπικά
+      if (data.categories && data.categories.length > 0) {
+        categories = data.categories;
+      }
+      if (data.expenses && data.expenses.length > 0) {
+        expenses = data.expenses;
+      }
+      if (data.recurringAmounts) {
+        recurringAmounts = data.recurringAmounts;
+      }
+      if (data.income) {
+        income = data.income;
+      }
+      if (data.bankBalances) {
+        bankBalances = data.bankBalances;
+      }
       
       saveAllData();
       initFields();
       render();
       
       updateSyncUI('online', data);
-      showQuickMessage('📡 Συνδεθήκατε στον προϋπολογισμό', 'success');
+      
+      // Μόνο την πρώτη φορά εμφανίζουμε μήνυμα
+      if (syncData.justCreated) {
+        showQuickMessage(`✅ Δημιουργήθηκε ο προϋπολογισμός "${data.name}"`, 'success');
+        delete syncData.justCreated;
+        localStorage.setItem('budgetbuddy_sync', JSON.stringify(syncData));
+      }
       
     } else {
-      // Δημιουργία νέου
+      // Δεν υπάρχει - δημιουργούμε
       createNewBudgetInFirebase();
     }
   }, (error) => {
@@ -789,19 +868,16 @@ function createNewBudgetInFirebase() {
     recurringAmounts: recurringAmounts,
     income: income,
     bankBalances: bankBalances,
-    lastUpdated: Date.now(),
-    lastUpdatedBy: currentUser
+    lastUpdated: Date.now()
   };
   
   firebaseRef.set(newBudget)
     .then(() => {
       updateSyncUI('online', newBudget);
-      showQuickMessage('✅ Δημιουργήθηκε νέος προϋπολογισμός', 'success');
     })
     .catch(error => {
       console.error("Firebase create error:", error);
       updateSyncUI('offline');
-      showQuickMessage('❌ Σφάλμα δημιουργίας', 'error');
     });
 }
 
@@ -818,17 +894,91 @@ function syncToFirebase() {
     recurringAmounts: recurringAmounts,
     income: income,
     bankBalances: bankBalances,
-    lastUpdated: Date.now(),
-    lastUpdatedBy: currentUser
+    lastUpdated: Date.now()
   };
   
-  firebaseRef.set(budgetData)
-    .then(() => {
-      console.log("✅ Συγχρονίστηκε");
-    })
-    .catch(error => {
-      console.error("Firebase sync error:", error);
-    });
+  firebaseRef.set(budgetData);
+}
+
+// ==================== MODAL ΚΩΔΙΚΟΥ ====================
+let generatedCodeForSharing = null;
+
+function showCodeModal(code) {
+  generatedCodeForSharing = code;
+  document.getElementById('generatedCode').textContent = code;
+  document.getElementById('codeModal').style.display = 'flex';
+}
+
+function closeCodeModal() {
+  document.getElementById('codeModal').style.display = 'none';
+}
+
+function showQRForCode() {
+  if (!generatedCodeForSharing) return;
+  
+  const qrData = {
+    app: "BudgetBuddy",
+    code: generatedCodeForSharing,
+    name: syncData.budgetName || "Προϋπολογισμός",
+    type: "join"
+  };
+  
+  const qrText = JSON.stringify(qrData);
+  const qrContainer = document.createElement('div');
+  qrContainer.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 4000;
+    padding: 20px;
+  `;
+  
+  QRCode.toCanvas(qrText, { width: 250 }, function(error, canvas) {
+    if (error) {
+      console.error('QR error:', error);
+      return;
+    }
+    
+    qrContainer.innerHTML = `
+      <div style="background: white; padding: 30px; border-radius: 15px; text-align: center; max-width: 300px;">
+        <h2 style="color: #e91e63; margin-top: 0;">📱 ΣΥΝΔΕΣΗ</h2>
+        <p>Σκανάρετε αυτό το QR code με το άλλο κινητό:</p>
+        <div style="margin: 20px 0; padding: 15px; background: white; border-radius: 10px;">
+          ${canvas.outerHTML}
+        </div>
+        <h3 style="font-family: monospace; letter-spacing: 3px; color: #333; margin: 15px 0;">${generatedCodeForSharing}</h3>
+        <p style="color: #666;">Κωδικός: <strong>${generatedCodeForSharing}</strong></p>
+        <button onclick="this.parentElement.parentElement.remove()" style="padding: 10px 25px; background: #e91e63; color: white; border: none; border-radius: 8px; margin-top: 15px; cursor: pointer;">
+          Κλείσιμο
+        </button>
+      </div>
+    `;
+    
+    document.body.appendChild(qrContainer);
+  });
+}
+
+function copyGeneratedCode() {
+  if (!generatedCodeForSharing) return;
+  
+  navigator.clipboard.writeText(generatedCodeForSharing).then(() => {
+    showQuickMessage('📋 Αντιγράφηκε ο κωδικός!', 'success');
+  }).catch(() => {
+    const tempInput = document.createElement('input');
+    tempInput.value = generatedCodeForSharing;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput);
+    showQuickMessage('📋 Αντιγράφηκε ο κωδικός!', 'success');
+  });
 }
 
 // ==================== MODAL ΣΥΓΧΡΟΝΙΣΜΟΥ ====================
@@ -837,7 +987,6 @@ function showSyncModal() {
   const content = document.getElementById('syncModalContent');
   
   if (currentBudget) {
-    // Είμαστε ήδη συνδεδεμένοι
     content.innerHTML = `
       <div class="sync-modal-section">
         <h3>✅ Είστε συνδεδεμένοι!</h3>
@@ -863,16 +1012,8 @@ function showSyncModal() {
           🔌 Αποσύνδεση
         </button>
       </div>
-      
-      <div class="sync-modal-section">
-        <h3>👥 Μέλη</h3>
-        <div id="modalUsersList">
-          ${syncData.members?.map(m => `<div style="padding: 5px; background: ${m === currentUser ? '#ffe6f1' : '#f0f0f0'}; margin: 5px 0; border-radius: 5px;">${m}${m === currentUser ? ' (Εσύ)' : ''}</div>`).join('') || currentUser}
-        </div>
-      </div>
     `;
   } else {
-    // Χωρίς συγχρονισμό
     content.innerHTML = `
       <div class="sync-modal-section">
         <h3>🔗 Συγχρονισμός Προϋπολογισμού</h3>
@@ -880,32 +1021,40 @@ function showSyncModal() {
       </div>
       
       <div class="sync-modal-section">
-        <h3>🚀 Δημιουργία νέου προϋπολογισμού</h3>
-        <div style="margin-bottom: 15px;">
+        <h3>🚀 ΔΗΜΙΟΥΡΓΙΑ ΝΕΟΥ</h3>
+        <p>Εισάγετε τα στοιχεία σας για να δημιουργήσετε νέο προϋπολογισμό:</p>
+        
+        <div style="margin: 15px 0;">
           <label style="display: block; margin-bottom: 5px; font-weight: bold;">Το Όνομά Σας:</label>
-          <input type="text" id="newUserName" value="${currentUser}" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+          <input type="text" id="newUserName" value="${currentUser}" placeholder="π.χ. Μαρία" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
         </div>
-        <div style="margin-bottom: 15px;">
+        
+        <div style="margin: 15px 0;">
           <label style="display: block; margin-bottom: 5px; font-weight: bold;">Όνομα Προϋπολογισμού:</label>
           <input type="text" id="newBudgetName" placeholder="π.χ. Οικογένεια Ιανουάριος" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
         </div>
-        <button onclick="createNewSync()" style="width: 100%; padding: 12px; background: #e91e63; color: white; border: none; border-radius: 8px; cursor: pointer;">
-          🚀 Δημιουργία Νέου Προϋπολογισμού
+        
+        <button onclick="createNewSync()" style="width: 100%; padding: 12px; background: #e91e63; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">
+          🚀 ΔΗΜΙΟΥΡΓΙΑ ΝΕΟΥ ΠΡΟΥΠΟΛΟΓΙΣΜΟΥ
         </button>
       </div>
       
       <div class="sync-modal-section">
-        <h3>🔗 Σύνδεση σε υπάρχον προϋπολογισμό</h3>
-        <div style="margin-bottom: 15px;">
+        <h3>🔗 ΣΥΝΔΕΣΗ ΣΕ ΥΠΑΡΧΟΝ</h3>
+        <p>Έχετε ήδη κωδικό από σύζυγο/φίλο;</p>
+        
+        <div style="margin: 15px 0;">
           <label style="display: block; margin-bottom: 5px; font-weight: bold;">Το Όνομά Σας:</label>
-          <input type="text" id="joinUserName" value="${currentUser}" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+          <input type="text" id="joinUserName" value="${currentUser}" placeholder="π.χ. Γιάννης" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
         </div>
-        <div style="margin-bottom: 15px;">
+        
+        <div style="margin: 15px 0;">
           <label style="display: block; margin-bottom: 5px; font-weight: bold;">Κωδικός Προϋπολογισμού:</label>
           <input type="text" id="joinBudgetCode" placeholder="6 ψηφία" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; text-align: center; letter-spacing: 3px; font-size: 18px;">
         </div>
-        <button onclick="joinExistingSync()" style="width: 100%; padding: 12px; background: #4caf50; color: white; border: none; border-radius: 8px; cursor: pointer;">
-          🔗 Σύνδεση σε Υπάρχον Προϋπολογισμό
+        
+        <button onclick="joinExistingSync()" style="width: 100%; padding: 12px; background: #4caf50; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;">
+          🔗 ΣΥΝΔΕΣΗ ΣΕ ΥΠΑΡΧΟΝ ΠΡΟΥΠΟΛΟΓΙΣΜΟ
         </button>
       </div>
     `;
@@ -935,13 +1084,18 @@ function createNewSync() {
     budgetCode: currentBudget,
     budgetName: budgetName,
     creator: userName,
-    members: [userName]
+    members: [userName],
+    justCreated: true
   };
   
   localStorage.setItem('budgetbuddy_sync', JSON.stringify(syncData));
   
   closeSyncModal();
-  initSync();
+  showCodeModal(currentBudget);
+  
+  setTimeout(() => {
+    initSync();
+  }, 500);
 }
 
 function joinExistingSync() {
@@ -965,7 +1119,11 @@ function joinExistingSync() {
   localStorage.setItem('budgetbuddy_sync', JSON.stringify(syncData));
   
   closeSyncModal();
-  initSync();
+  showQuickMessage('🔗 Συνδέεστε στον προϋπολογισμό...', 'info');
+  
+  setTimeout(() => {
+    initSync();
+  }, 500);
 }
 
 function showQRCode() {
@@ -986,7 +1144,7 @@ function showQRCode() {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.9);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1003,7 +1161,7 @@ function showQRCode() {
     
     qrContainer.innerHTML = `
       <div style="background: white; padding: 30px; border-radius: 15px; text-align: center; max-width: 300px;">
-        <h2 style="color: #e91e63; margin-top: 0;">📱 Σύνδεση</h2>
+        <h2 style="color: #e91e63; margin-top: 0;">📱 ΣΥΝΔΕΣΗ</h2>
         <p>Σκανάρετε αυτό το QR code με το άλλο κινητό:</p>
         <div style="margin: 20px 0; padding: 15px; background: white; border-radius: 10px;">
           ${canvas.outerHTML}
@@ -1061,7 +1219,7 @@ function generateSyncCode() {
   return code;
 }
 
-// ==================== ΟΙ ΠΑΛΙΕΣ ΣΥΝΑΡΤΗΣΕΙΣ ====================
+// ==================== ΟΙ ΠΑΛΙΕΣ ΣΥΝΑΡΤΗΣΕΙΣ ΤΗΣ ΕΦΑΡΜΟΓΗΣ ====================
 function cleanupData() {
   categories = categories.filter(cat => cat && typeof cat === 'string' && cat.trim() !== '');
   
@@ -1465,7 +1623,12 @@ function save() {
   render();
 }
 
-function createStars() {
+// ==================== ΑΡΧΙΚΟΠΟΙΗΣΗ ====================
+document.getElementById('income').addEventListener('input', () => save());
+document.getElementById('month').addEventListener('input', () => render());
+
+window.onload = function() {
+  // Δημιουργία αστεριών
   const starsContainer = document.getElementById('stars');
   const starColors = ['#fff', '#ffd1e8', '#ffb6c1', '#ffc0cb'];
   
@@ -1479,25 +1642,22 @@ function createStars() {
     star.style.color = starColors[Math.floor(Math.random() * starColors.length)];
     starsContainer.appendChild(star);
   }
-}
-
-// ==================== ΑΡΧΙΚΟΠΟΙΗΣΗ ====================
-document.getElementById('income').addEventListener('input', () => save());
-document.getElementById('month').addEventListener('input', () => render());
-
-window.onload = function() {
-  createStars();
   
+  // Αρχικοποίηση πεδίων
   const currentMonth = new Date().toISOString().slice(0,7);
   document.getElementById('month').value = currentMonth;
   
   const today = new Date().toISOString().slice(0,10);
   document.getElementById('date').value = today;
   
+  // Αρχικοποίηση εφαρμογής
   initFields();
   render();
+  
+  // Έναρξη συγχρονισμού
   initSync();
   
+  // Αυτόματη αποθήκευση κάθε 30 δευτερόλεπτα
   setInterval(() => {
     if (currentBudget) {
       syncToFirebase();
