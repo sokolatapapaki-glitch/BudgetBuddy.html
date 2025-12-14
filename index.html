@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BudgetBuddy — Έξοδα Σπιτιού</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
 <style>
   body {
     font-family: "Segoe UI", sans-serif;
@@ -200,10 +201,37 @@
   }
 
   input, select, button {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    width: 100%;
+    margin-bottom: 8px;
+    -webkit-appearance: none;
+  }
+  
+  input:focus, select:focus {
+    outline: none;
+    border-color: #e91e63;
+    box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.1);
+  }
+  
+  button {
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  button:active {
+    transform: scale(0.95);
+  }
+  
+  button.add { 
+    background: #e91e63; 
+    color: white; 
+    border: none;
+    font-weight: bold;
+    padding: 14px;
+    margin-top: 10px;
   }
 
   button {
@@ -405,6 +433,83 @@
   .user-badge.you {
     background: #e91e63;
   }
+  
+  .user-badge.creator {
+    background: #ff9800;
+    position: relative;
+  }
+
+  /* Στυλ για τα νέα modals */
+  .custom-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 3000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .custom-modal-content {
+    background: white;
+    border-radius: 15px;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  
+  .custom-modal-header {
+    position: relative;
+    background: #9c27b0;
+    color: white;
+    padding: 20px;
+    border-radius: 15px 15px 0 0;
+  }
+  
+  .custom-modal-header h2 {
+    margin: 0;
+    padding-right: 40px;
+  }
+  
+  .modal-close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  
+  .modal-close-button:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.1);
+  }
+  
+  .custom-modal-body {
+    padding: 20px;
+  }
+  
+  .custom-modal-footer {
+    padding: 15px 20px 20px;
+    text-align: center;
+    border-top: 1px solid #eee;
+  }
 
   @media (max-width: 768px) {
     .container {
@@ -414,6 +519,10 @@
     
     h1 {
       font-size: 1.5em;
+    }
+    
+    .form-section {
+      padding-bottom: 80px;
     }
     
     .big-sync-button {
@@ -525,6 +634,19 @@
     </div>
   </h1>
   
+  <!-- ΝΕΑ ΚΟΥΜΠΙΑ ΔΗΜΙΟΥΡΓΙΑΣ ΝΕΟΥ ΜΗΝΑ -->
+  <div style="display: flex; justify-content: center; gap: 10px; margin: 15px 0; flex-wrap: wrap;">
+    <button onclick="showNewBudgetModal()" style="padding: 10px 20px; background: #9c27b0; color: white; border: none; border-radius: 25px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+      📅 Νέος Μήνας
+    </button>
+    <button onclick="saveArchivedBudget()" style="padding: 10px 20px; background: #ff9800; color: white; border: none; border-radius: 25px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+      💾 Αποθήκευση Αρχείου
+    </button>
+    <button onclick="showArchivedBudgets()" style="padding: 10px 20px; background: #607d8b; color: white; border: none; border-radius: 25px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+      📁 Προβολή Αρχείων
+    </button>
+  </div>
+  
   <div class="connected-users" id="connectedUsers" style="display: none;">
     <strong>Συνδεδεμένοι:</strong>
     <div id="usersList"></div>
@@ -608,7 +730,21 @@
     </thead>
     <tbody></tbody>
   </table>
-
+  
+  <h3>📈 ΣΤΑΤΙΣΤΙΚΑ</h3>
+  <div class="stats-section" style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-radius: 10px;">
+    <div class="stats-grid" id="statsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;"></div>
+    
+    <div class="chart-container" style="margin-top: 20px; padding: 15px; background: white; border-radius: 10px;">
+      <h4 style="margin-top: 0; color: #e91e63;">📊 Κατανομή Εξόδων</h4>
+      <div id="expenseChart" style="height: 200px; display: flex; align-items: flex-end; gap: 5px; padding: 10px; border: 1px solid #eee; border-radius: 8px;"></div>
+      <p style="text-align: center; color: #666; font-size: 13px; margin-top: 10px;">
+        <span style="background: #e91e63; width: 10px; height: 10px; display: inline-block; border-radius: 2px; margin-right: 5px;"></span>
+        Ύψος μπάρας = Ποσό έξοδου
+      </p>
+    </div>
+  </div>
+  
   <h3>📊 Σύνοψη ανά κατηγορία</h3>
   <div class="catlist" id="catList"></div>
 
@@ -656,12 +792,28 @@
   <div class="sync-modal-content">
     <h2>🔗 ΣΥΓΧΡΟΝΙΣΜΟΣ ΠΡΟΥΠΟΛΟΓΙΣΜΟΥ</h2>
     
-    <div id="syncModalContent">
-      <!-- Εδώ θα φορτώνει δυναμικά το περιεχόμενο -->
-    </div>
+    <div id="syncModalContent"></div>
     
     <div style="text-align: center; margin-top: 20px;">
       <button onclick="closeSyncModal()" style="padding: 8px 20px; background: #f0f0f0; border: none; border-radius: 5px; cursor: pointer;">Κλείσιμο</button>
+    </div>
+  </div>
+</div>
+
+<!-- ΝΕΟ CUSTOM MODAL (για αρχεία και άλλα) -->
+<div class="custom-modal" id="customModal">
+  <div class="custom-modal-content">
+    <div class="custom-modal-header">
+      <h2 id="customModalTitle">Τίτλος</h2>
+      <button class="modal-close-button" onclick="closeCustomModal()">×</button>
+    </div>
+    <div class="custom-modal-body" id="customModalBody">
+      Περιεχόμενο
+    </div>
+    <div class="custom-modal-footer">
+      <button onclick="closeCustomModal()" style="padding: 10px 25px; background: #e91e63; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        Κλείσιμο
+      </button>
     </div>
   </div>
 </div>
@@ -747,13 +899,32 @@ function updateSyncUI(status, data = null) {
   if (status === 'online' && data) {
     mainDot.className = 'sync-status-dot sync-online';
     headerDot.className = 'sync-status-dot sync-online';
-    buttonText.textContent = `Συνδεδεμένο (${data.members?.length || 1})`;
     
-    if (data.members && data.members.length > 0) {
+    if (data.members && Array.isArray(data.members)) {
       connectedUsers.style.display = 'flex';
-      usersList.innerHTML = data.members.map(member => 
-        `<div class="user-badge ${member === currentUser ? 'you' : ''}">${member}${member === currentUser ? ' (Εσύ)' : ''}</div>`
-      ).join('');
+      
+      const uniqueMembers = [...new Set(data.members)];
+      
+      usersList.innerHTML = uniqueMembers.map(member => {
+        const isYou = (member === currentUser);
+        const isCreator = (member === data.creator);
+        
+        let badgeClass = 'user-badge';
+        if (isYou) badgeClass += ' you';
+        if (isCreator) badgeClass += ' creator';
+        
+        let badgeText = member;
+        if (isYou) badgeText += ' (Εσύ)';
+        if (isCreator && !isYou) badgeText += ' 👑';
+        
+        return `<div class="${badgeClass}">${badgeText}</div>`;
+      }).join('');
+      
+      const userCount = uniqueMembers.length;
+      buttonText.textContent = `Συνδεδεμένο${userCount > 1 ? 'ι' : ''} (${userCount})`;
+      
+    } else {
+      connectedUsers.style.display = 'none';
     }
     
     syncInfo.innerHTML = `<strong>Συγχρονισμένο:</strong> ${data.name || currentBudget} | Κωδικός: <strong>${currentBudget}</strong>`;
@@ -774,6 +945,254 @@ function updateSyncUI(status, data = null) {
   }
 }
 
+// ==================== ΣΥΝΑΡΤΗΣΕΙΣ ΑΡΧΕΙΟΘΕΤΗΣΗΣ - ΔΙΟΡΘΩΜΕΝΕΣ ====================
+function saveArchivedBudget() {
+  const currentMonth = document.getElementById('month').value;
+  if (!currentMonth) {
+    showQuickMessage('⚠️ Δεν υπάρχει επιλεγμένος μήνας για αρχειοθέτηση', 'error');
+    return;
+  }
+  
+  const currentExpenses = expenses.filter(e => e.date.startsWith(currentMonth));
+  
+  if (currentExpenses.length === 0 && categories.length === 0) {
+    showQuickMessage('⚠️ Δεν υπάρχουν δεδομένα για αρχειοθέτηση', 'error');
+    return;
+  }
+  
+  const archiveKey = `budget_archive_${currentMonth}`;
+  const archiveData = {
+    month: currentMonth,
+    expenses: currentExpenses,
+    categories: [...categories],
+    recurringAmounts: {...recurringAmounts},
+    income: income,
+    bankBalances: {...bankBalances},
+    savedAt: new Date().toISOString()
+  };
+  
+  localStorage.setItem(archiveKey, JSON.stringify(archiveData));
+  showQuickMessage(`📁 Αρχειοθετήθηκε ο μήνας ${currentMonth}`, 'success');
+}
+
+function showArchivedBudgets() {
+  const archiveKeys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('budget_archive_')) {
+      archiveKeys.push(key);
+    }
+  }
+  
+  if (archiveKeys.length === 0) {
+    showQuickMessage('📭 Δεν υπάρχουν αρχειοθετημένοι προϋπολογισμοί', 'info');
+    return;
+  }
+  
+  let content = '<h3>📁 Αρχειοθετημένοι Προϋπολογισμοί</h3>';
+  
+  archiveKeys.forEach(key => {
+    try {
+      const data = JSON.parse(localStorage.getItem(key));
+      const month = data.month;
+      const expenseCount = data.expenses?.length || 0;
+      const total = data.expenses?.reduce((sum, e) => sum + e.amount, 0) || 0;
+      
+      content += `
+        <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #9c27b0;">
+          <strong>${month}</strong>
+          <div style="font-size: 14px; color: #666;">
+            Έξοδα: ${expenseCount} | Σύνολο: ${total.toFixed(2)}€ | Κατηγορίες: ${data.categories?.length || 0}
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button onclick="loadArchivedBudget('${key}')" style="padding: 8px 15px; background: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; flex: 1;">
+              🔄 Φόρτωση
+            </button>
+            <button onclick="deleteArchivedBudget('${key}')" style="padding: 8px 15px; background: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 13px; flex: 1;">
+              🗑️ Διαγραφή
+            </button>
+          </div>
+        </div>
+      `;
+    } catch (e) {
+      console.error('Error loading archive:', e);
+    }
+  });
+  
+  showCustomModal('Αρχειοθετημένοι Προϋπολογισμοί', content);
+}
+
+function showCustomModal(title, content) {
+  document.getElementById('customModalTitle').textContent = title;
+  document.getElementById('customModalBody').innerHTML = content;
+  document.getElementById('customModal').style.display = 'flex';
+  
+  // Προσθήκη κλεισίματος με το ESC
+  const closeOnEsc = (e) => {
+    if (e.key === 'Escape') closeCustomModal();
+  };
+  
+  document.addEventListener('keydown', closeOnEsc);
+  document.getElementById('customModal')._closeOnEsc = closeOnEsc;
+}
+
+function closeCustomModal() {
+  const modal = document.getElementById('customModal');
+  if (modal) {
+    document.removeEventListener('keydown', modal._closeOnEsc);
+    modal.style.display = 'none';
+  }
+}
+
+function loadArchivedBudget(key) {
+  try {
+    const data = JSON.parse(localStorage.getItem(key));
+    
+    document.getElementById('month').value = data.month;
+    expenses = data.expenses || [];
+    categories = data.categories || [];
+    recurringAmounts = data.recurringAmounts || {};
+    income = data.income || 0;
+    bankBalances = data.bankBalances || {};
+    
+    document.getElementById('income').value = income;
+    
+    saveAllData();
+    initFields();
+    render();
+    
+    closeCustomModal();
+    showQuickMessage(`✅ Φορτώθηκε ο προϋπολογισμός ${data.month}`, 'success');
+  } catch (e) {
+    showQuickMessage('❌ Σφάλμα φόρτωσης αρχείου', 'error');
+  }
+}
+
+function deleteArchivedBudget(key) {
+  if (confirm('Θέλετε να διαγράψετε αυτό το αρχειοθετημένο προϋπολογισμό;')) {
+    localStorage.removeItem(key);
+    showArchivedBudgets();
+    showQuickMessage('🗑️ Διαγράφηκε το αρχείο', 'success');
+  }
+}
+
+function showNewBudgetModal() {
+  const content = `
+    <div style="text-align: center; padding: 20px;">
+      <h3 style="color: #9c27b0;">📅 Δημιουργία Νέου Προϋπολογισμού</h3>
+      <p>Δημιουργία νέου προϋπολογισμού για διαφορετικό μήνα:</p>
+      
+      <div style="margin: 20px 0;">
+        <label style="display: block; margin-bottom: 8px; font-weight: bold;">Επιλέξτε Μήνα:</label>
+        <input type="month" id="newBudgetMonth" value="${new Date().toISOString().slice(0,7)}" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 16px;">
+      </div>
+      
+      <div style="margin: 20px 0;">
+        <label style="display: block; margin-bottom: 8px; font-weight: bold;">Τι θέλετε να κάνετε:</label>
+        <select id="budgetAction" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+          <option value="new">✨ Δημιουργία εντελώς νέου (άδειας λίστας)</option>
+          <option value="copy" selected>📋 Αντιγραφή δεδομένων από προηγούμενο μήνα</option>
+          <option value="archive">📁 Αρχειοθέτηση τρέχοντος και νέο</option>
+        </select>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 30px;">
+        <button onclick="closeCustomModal()" style="padding: 12px; background: #f0f0f0; color: #333; border: none; border-radius: 8px; cursor: pointer;">
+          Ακύρωση
+        </button>
+        <button onclick="createNewMonthlyBudget()" style="padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 8px; cursor: pointer;">
+          Δημιουργία
+        </button>
+      </div>
+    </div>
+  `;
+  
+  showCustomModal('Δημιουργία Νέου Μήνα', content);
+}
+
+function createNewMonthlyBudget() {
+  const month = document.getElementById('newBudgetMonth').value;
+  const action = document.getElementById('budgetAction').value;
+  
+  if (!month) {
+    showQuickMessage('⚠️ Παρακαλώ επιλέξτε μήνα', 'error');
+    return;
+  }
+  
+  // Αρχειοθέτηση ΠΡΙΝ την αλλαγή μήνα (μόνο αν το επιλέξει ο χρήστης)
+  if (action === 'archive') {
+    const currentMonth = document.getElementById('month').value;
+    const currentExpenses = expenses.filter(e => e.date.startsWith(currentMonth));
+    
+    if (currentExpenses.length > 0) {
+      const archiveKey = `budget_archive_${currentMonth}`;
+      const archiveData = {
+        month: currentMonth,
+        expenses: currentExpenses,
+        categories: [...categories],
+        recurringAmounts: {...recurringAmounts},
+        income: income,
+        bankBalances: {...bankBalances},
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem(archiveKey, JSON.stringify(archiveData));
+      showQuickMessage(`📁 Αρχειοθετήθηκε ο μήνας ${currentMonth}`, 'success');
+    }
+  }
+  
+  // Αποθήκευση των ΤΡΕΧΟΝΤΩΝ δεδομένων ΠΡΙΝ την αλλαγή (για αντιγραφή)
+  const currentCategories = [...categories];
+  const currentRecurringAmounts = {...recurringAmounts};
+  const currentIncome = income;
+  const currentBankBalances = {...bankBalances};
+  
+  // Ενημέρωση του μήνα στο UI
+  document.getElementById('month').value = month;
+  
+  // Ανάλογα με την επιλογή
+  if (action === 'new') {
+    // ΕΚΤΕΛΕΣΗ: Δημιουργία νέου (διατήρηση μόνο επαναλαμβανόμενων)
+    const selectedMonth = month;
+    expenses = expenses.filter(e => e.isRecurring === true);
+    
+    // Ενημέρωση ημερομηνιών για επαναλαμβανόμενα
+    expenses.forEach(e => {
+      if (e.isRecurring) {
+        e.date = selectedMonth + '-01';
+      }
+    });
+    
+    // Διατήρηση κατηγοριών και προϋπολογισμών
+    categories = [...currentCategories];
+    recurringAmounts = {...currentRecurringAmounts};
+    
+    showQuickMessage(`✨ Δημιουργήθηκε νέος προϋπολογισμός για ${month}`, 'success');
+    
+  } else if (action === 'copy') {
+    // ΕΚΤΕΛΕΣΗ: Αντιγραφή ΟΛΩΝ των δεδομένων από προηγούμενο μήνα
+    // Διατήρηση κατηγοριών, προϋπολογισμών, εισοδήματος και τραπεζικών υπολοίπων
+    categories = [...currentCategories];
+    recurringAmounts = {...currentRecurringAmounts};
+    income = currentIncome;
+    bankBalances = currentBankBalances;
+    
+    // Διατήρηση όλων των εξόδων, αλλά αλλαγή μόνο του μήνα σε αυτά που είναι του τρέχοντος
+    const oldMonth = document.getElementById('month').value;
+    expenses.forEach(e => {
+      if (e.date.startsWith(oldMonth)) {
+        e.date = month + e.date.substring(7); // Αντικατάσταση του μήνα
+      }
+    });
+    
+    showQuickMessage(`📋 Αντιγράφηκαν όλα τα δεδομένα για ${month}`, 'success');
+  }
+  
+  // Κλείσιμο modal και ανανέωση
+  closeCustomModal();
+  saveAllData();
+  render();
+}
+
 // ==================== ΣΥΓΧΡΟΝΙΣΜΟΣ ====================
 function initSync() {
   if (!currentBudget) {
@@ -781,7 +1200,6 @@ function initSync() {
     return;
   }
   
-  // Σύνδεση με Firebase
   if (!firebase.apps.length) {
     const firebaseConfig = {
       apiKey: "AIzaSyBaItM0-eOAwU6snAxfMU_bcp9xW0UfYzQ",
@@ -800,42 +1218,56 @@ function initSync() {
   
   updateSyncUI('connecting');
   
-  // Ακούμε για αλλαγές
+  let lastUpdateTime = 0;
+  const UPDATE_COOLDOWN = 2000;
+  
   firebaseRef.on('value', (snapshot) => {
+    const now = Date.now();
+    if (now - lastUpdateTime < UPDATE_COOLDOWN) {
+      return;
+    }
+    
     const data = snapshot.val();
     if (data) {
-      // Βρήκαμε προϋπολογισμό - ενημέρωση δεδομένων
+      lastUpdateTime = now;
+      
+      const isCreator = (syncData.creator === currentUser);
+      
+      if (!isCreator) {
+        if (data.categories && data.categories.length > 0) {
+          categories = data.categories;
+        }
+        if (data.expenses && data.expenses.length > 0) {
+          expenses = data.expenses;
+        }
+        if (data.recurringAmounts) {
+          recurringAmounts = data.recurringAmounts;
+        }
+        if (data.income) {
+          income = data.income;
+          document.getElementById('income').value = income;
+        }
+        if (data.bankBalances) {
+          bankBalances = data.bankBalances;
+        }
+        
+        saveAllData();
+        initFields();
+        render();
+      }
+      
       syncData.budgetName = data.name;
       syncData.creator = data.creator;
       syncData.members = data.members || [currentUser];
       
-      // Αποθήκευση τοπικά
+      if (!syncData.members.includes(currentUser)) {
+        syncData.members.push(currentUser);
+        syncToFirebase();
+      }
+      
       localStorage.setItem('budgetbuddy_sync', JSON.stringify(syncData));
-      
-      // Ενημέρωση τοπικών δεδομένων ΑΝ δεν έχουμε τοπικά
-      if (data.categories && data.categories.length > 0) {
-        categories = data.categories;
-      }
-      if (data.expenses && data.expenses.length > 0) {
-        expenses = data.expenses;
-      }
-      if (data.recurringAmounts) {
-        recurringAmounts = data.recurringAmounts;
-      }
-      if (data.income) {
-        income = data.income;
-      }
-      if (data.bankBalances) {
-        bankBalances = data.bankBalances;
-      }
-      
-      saveAllData();
-      initFields();
-      render();
-      
       updateSyncUI('online', data);
       
-      // Μόνο την πρώτη φορά εμφανίζουμε μήνυμα
       if (syncData.justCreated) {
         showQuickMessage(`✅ Δημιουργήθηκε ο προϋπολογισμός "${data.name}"`, 'success');
         delete syncData.justCreated;
@@ -843,8 +1275,9 @@ function initSync() {
       }
       
     } else {
-      // Δεν υπάρχει - δημιουργούμε
-      createNewBudgetInFirebase();
+      if (syncData.creator === currentUser) {
+        createNewBudgetInFirebase();
+      }
     }
   }, (error) => {
     console.error("Firebase error:", error);
@@ -884,20 +1317,26 @@ function createNewBudgetInFirebase() {
 function syncToFirebase() {
   if (!currentBudget || !firebaseRef) return;
   
-  const budgetData = {
-    code: currentBudget,
-    name: syncData.budgetName || `Προϋπολογισμός ${currentBudget}`,
-    creator: syncData.creator || currentUser,
-    members: syncData.members || [currentUser],
-    categories: categories,
-    expenses: expenses,
-    recurringAmounts: recurringAmounts,
-    income: income,
-    bankBalances: bankBalances,
-    lastUpdated: Date.now()
-  };
+  if (window.syncTimeout) {
+    clearTimeout(window.syncTimeout);
+  }
   
-  firebaseRef.set(budgetData);
+  window.syncTimeout = setTimeout(() => {
+    const budgetData = {
+      code: currentBudget,
+      name: syncData.budgetName || `Προϋπολογισμός ${currentBudget}`,
+      creator: syncData.creator || currentUser,
+      members: syncData.members || [currentUser],
+      categories: categories,
+      expenses: expenses,
+      recurringAmounts: recurringAmounts,
+      income: income,
+      bankBalances: bankBalances,
+      lastUpdated: Date.now()
+    };
+    
+    firebaseRef.set(budgetData);
+  }, 1000);
 }
 
 // ==================== MODAL ΚΩΔΙΚΟΥ ====================
@@ -1248,7 +1687,7 @@ function saveAllData() {
 function initFields() {
   cleanupData();
   
-  document.getElementById('income').value = income;
+  document.getElementById('income').value = income || '';
   
   const currentMonth = new Date().toISOString().slice(0,7);
   const monthInput = document.getElementById('month');
@@ -1259,10 +1698,10 @@ function initFields() {
   const today = new Date().toISOString().slice(0,10);
   document.getElementById('date').value = today;
   
-  document.getElementById('alphaBank').value = bankBalances.alphaBank || 0;
-  document.getElementById('nationalBank').value = bankBalances.nationalBank || 0;
-  document.getElementById('cash').value = bankBalances.cash || 0;
-  document.getElementById('expectedIncome').value = bankBalances.expectedIncome || 0;
+  document.getElementById('alphaBank').value = bankBalances.alphaBank || '';
+  document.getElementById('nationalBank').value = bankBalances.nationalBank || '';
+  document.getElementById('cash').value = bankBalances.cash || '';
+  document.getElementById('expectedIncome').value = bankBalances.expectedIncome || '';
   
   updateCategoriesList();
   updateRecurringInputs();
@@ -1337,38 +1776,44 @@ function deleteCategory(index) {
   saveAllData();
   updateCategoriesList();
   updateRecurringInputs();
+  render();
   showQuickMessage(`🗑️ Διαγράφηκε η κατηγορία "${categoryName}"`, 'success');
 }
 
 function updateRecurringInputs() {
   const recurringInputsDiv = document.getElementById('recurringInputs');
-  let html = '';
   
   if (categories.length === 0) {
-    html = '<p style="color:#777; font-style:italic;">Δεν υπάρχουν κατηγορίες. Προσθέστε πρώτα κατηγορίες.</p>';
-  } else {
-    categories.forEach((category, index) => {
-      const amount = recurringAmounts[category] || 0;
-      const uniqueId = `recurring_${index}_${category.replace(/\s+/g, '_')}`;
-      
-      html += `
-        <div style="margin-bottom: 10px;">
-          <label style="display: inline-block; width: 200px; vertical-align: middle;">${category}:</label>
+    recurringInputsDiv.innerHTML = '<p style="color:#777; font-style:italic; padding: 10px;">Δεν υπάρχουν κατηγορίες. Προσθέστε πρώτα κατηγορίες.</p>';
+    return;
+  }
+  
+  let html = `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">`;
+  
+  categories.forEach((category, index) => {
+    const amount = recurringAmounts[category] || 0;
+    const uniqueId = `recurring_${index}_${category.replace(/\s+/g, '_')}`;
+    
+    html += `
+      <div style="background: white; padding: 12px; border-radius: 8px; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #333; font-size: 14px;">
+          ${category}
+        </label>
+        <div style="display: flex; align-items: center; gap: 8px;">
           <input type="number" 
                  id="${uniqueId}" 
                  value="${amount}" 
                  step="0.01" 
-                 style="width: 100px; vertical-align: middle;"
+                 style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px;"
+                 placeholder="0.00"
                  onchange="updateSingleRecurringAmount('${category}', this.value)">
-          €
-          <span style="margin-left: 10px; color: #666; font-size: 12px;">
-            (Τρέχουσα τιμή: ${amount} €)
-          </span>
+          <span style="color: #666; font-size: 14px;">€</span>
         </div>
-      `;
-    });
-  }
+      </div>
+    `;
+  });
   
+  html += '</div>';
   recurringInputsDiv.innerHTML = html;
 }
 
@@ -1376,15 +1821,8 @@ function updateSingleRecurringAmount(category, value) {
   const numValue = parseFloat(value) || 0;
   recurringAmounts[category] = numValue;
   
-  const inputElement = document.querySelector(`input[value="${value}"]`);
-  if (inputElement) {
-    const span = inputElement.nextElementSibling?.nextElementSibling;
-    if (span) {
-      span.textContent = ` (Τρέχουσα τιμή: ${numValue} €)`;
-    }
-  }
-  
   saveAllData();
+  showQuickMessage(`✅ Ενημερώθηκε ο προϋπολογισμός για ${category}: ${numValue.toFixed(2)}€`, 'success');
 }
 
 function saveRecurringAmounts() {
@@ -1455,6 +1893,7 @@ function generateRecurringExpenses() {
   });
   
   saveAllData();
+  render();
   showQuickMessage(`🔄 Δημιουργήθηκαν επαναλαμβανόμενα έξοδα για ${selectedMonth}`, 'success');
 }
 
@@ -1502,15 +1941,22 @@ function addExpense() {
   document.getElementById('note').value = '';
   
   saveAllData();
+  render();
   showQuickMessage(`✅ Προστέθηκε έξοδο ${category} - ${amount.toFixed(2)}€`, 'success');
 }
 
 function deleteExpense(id) {
   if (!confirm('Θέλετε να διαγράψετε αυτό το έξοδο;')) return;
   
-  expenses = expenses.filter(e => e.id !== id);
+  const index = expenses.findIndex(e => e.id === id);
+  if (index === -1) return;
+  
+  const deletedExpense = expenses[index];
+  expenses.splice(index, 1);
+  
   saveAllData();
-  showQuickMessage('🗑️ Το έξοδο διαγράφηκε', 'success');
+  render();
+  showQuickMessage(`🗑️ Διαγράφηκε έξοδο ${deletedExpense.amount.toFixed(2)}€ (${deletedExpense.category})`, 'success');
 }
 
 function render() {
@@ -1614,6 +2060,73 @@ function render() {
   } else {
     finalBalanceElement.style.color = '#4caf50';
   }
+  
+  updateStatistics(filteredExpenses, categories);
+}
+
+function updateStatistics(expenses, categories) {
+  const statsGrid = document.getElementById('statsGrid');
+  const expenseChart = document.getElementById('expenseChart');
+  
+  if (!statsGrid || !expenseChart) return;
+  
+  const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  const avgExpense = expenses.length > 0 ? totalExpenses / expenses.length : 0;
+  const maxExpense = expenses.length > 0 ? Math.max(...expenses.map(e => e.amount)) : 0;
+  const minExpense = expenses.length > 0 ? Math.min(...expenses.map(e => e.amount)) : 0;
+  const expenseCount = expenses.length;
+  
+  const categoryTotals = {};
+  categories.forEach(cat => {
+    categoryTotals[cat] = expenses
+      .filter(e => e.category === cat)
+      .reduce((sum, e) => sum + e.amount, 0);
+  });
+  
+  const maxCategoryValue = Math.max(...Object.values(categoryTotals));
+  
+  statsGrid.innerHTML = `
+    <div class="stat-box" style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
+      <div class="stat-label" style="font-size: 12px; color: #666;">ΣΥΝΟΛΟ ΕΞΟΔΩΝ</div>
+      <div class="stat-value" style="font-size: 24px; font-weight: bold; color: #e91e63;">${totalExpenses.toFixed(2)}€</div>
+    </div>
+    <div class="stat-box" style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
+      <div class="stat-label" style="font-size: 12px; color: #666;">Μ.Ο. ΕΞΟΔΟΥ</div>
+      <div class="stat-value" style="font-size: 24px; font-weight: bold; color: #2196f3;">${avgExpense.toFixed(2)}€</div>
+    </div>
+    <div class="stat-box" style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
+      <div class="stat-label" style="font-size: 12px; color: #666;">ΜΕΓΑΛΥΤΕΡΟ</div>
+      <div class="stat-value" style="font-size: 24px; font-weight: bold; color: #f44336;">${maxExpense.toFixed(2)}€</div>
+    </div>
+    <div class="stat-box" style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
+      <div class="stat-label" style="font-size: 12px; color: #666;">ΕΞΟΔΑ (πλήθος)</div>
+      <div class="stat-value" style="font-size: 24px; font-weight: bold; color: #4caf50;">${expenseCount}</div>
+    </div>
+  `;
+  
+  if (maxCategoryValue > 0) {
+    let chartHTML = '';
+    categories.forEach(cat => {
+      const value = categoryTotals[cat] || 0;
+      const height = maxCategoryValue > 0 ? (value / maxCategoryValue * 100) : 0;
+      const color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+      
+      chartHTML += `
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+          <div style="width: 80%; background: ${color}; height: ${height}%; border-radius: 4px 4px 0 0; transition: height 0.5s;"></div>
+          <div style="font-size: 11px; margin-top: 5px; text-align: center; color: #666; writing-mode: vertical-rl; transform: rotate(180deg); height: 60px; overflow: hidden; text-overflow: ellipsis;">
+            ${cat}
+          </div>
+          <div style="font-size: 10px; color: #999; margin-top: 5px;">
+            ${value.toFixed(0)}€
+          </div>
+        </div>
+      `;
+    });
+    expenseChart.innerHTML = chartHTML;
+  } else {
+    expenseChart.innerHTML = '<div style="text-align: center; color: #999; padding: 40px;">Δεν υπάρχουν έξοδα για να εμφανιστεί γράφημα</div>';
+  }
 }
 
 function save() {
@@ -1624,11 +2137,7 @@ function save() {
 }
 
 // ==================== ΑΡΧΙΚΟΠΟΙΗΣΗ ====================
-document.getElementById('income').addEventListener('input', () => save());
-document.getElementById('month').addEventListener('input', () => render());
-
 window.onload = function() {
-  // Δημιουργία αστεριών
   const starsContainer = document.getElementById('stars');
   const starColors = ['#fff', '#ffd1e8', '#ffb6c1', '#ffc0cb'];
   
@@ -1643,21 +2152,20 @@ window.onload = function() {
     starsContainer.appendChild(star);
   }
   
-  // Αρχικοποίηση πεδίων
   const currentMonth = new Date().toISOString().slice(0,7);
   document.getElementById('month').value = currentMonth;
   
   const today = new Date().toISOString().slice(0,10);
   document.getElementById('date').value = today;
   
-  // Αρχικοποίηση εφαρμογής
   initFields();
   render();
   
-  // Έναρξη συγχρονισμού
+  document.getElementById('income').addEventListener('input', () => save());
+  document.getElementById('month').addEventListener('input', () => render());
+  
   initSync();
   
-  // Αυτόματη αποθήκευση κάθε 30 δευτερόλεπτα
   setInterval(() => {
     if (currentBudget) {
       syncToFirebase();
