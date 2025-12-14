@@ -3,6 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Εικονίδια για iOS/Android -->
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%23e91e63%22>🌸</text></svg>">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFRSURBVHgB7Za9SgNBFIVPd2Plo5U2gq0/IDaCjVjYibWCIJjO0t+QxsYH0AfwAazETkGwsfApfAGx0E6wsBDh2oSo6yST2Y3uslfYBWc+uDB7mbln5s7s7gAOh8Ph+M8QYAOANSwA8IyCQQDWsADAOxaEAgBvWBACADxjQSAA8IQFoQDAIxaEAgAPWBAGANxjQRAAMLAgDAC4w4IgAGCDC6IAgFssCAIAbrAgCgC4xoIoAOAaC6IAgCssiAIALrEgCgC4wIIoAOACC6IAgHMsCAIATrEgCAA4w4IgAOAUC4IAgBMsCAIATrAgCgA4xoIoAOAYC6IAgCMsCAIADrEgCgA4wIIoAOAAZ84CAGNv2E22n6JhAgFgvKX+BKBf3AYBrF/BCuuvYYUA2Jg8gI1pAJC16b+V1XkAe6oDLJ+sAiB7cwDqj37A4pJSAORvAEi9n+oA0nVAVqsCUvTfADaMAAzYsgIy+lFDRn8GGf0Y8vR7kKffgTz9HuTp9yBPvwcF6PcgT78DBen3oED9DhSs34Ei9DtQhH4HitTvQJH6HShSvwNF6vdQqH4Pher3UKh+D8b6HTS0fyZQ/1fUTP8NGut30Oz0/4o+0e+gWel3OJx+nf4ODdH/cqBO1QAAAABJRU5ErkJggg==">
+<link rel="icon" type="image/png" sizes="16x16" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAFQSURBVHgBtZQ9SgNBFIVnNlaihYWoWIn4A2Il2Ig2YmEhtgpCMJ2lvyGNjQ+gD+AFrEQ7BcHGwgp/QCy0EywsRLg2Ieo6ySR7Y3c3u8smd8+duzNzz9w7O5MBaIZrJgBPKBgE4A0LAjxjQSAA8IwFgQDAExYEAgAPWBAIADxgQSAAcI8FgQDAHRYEAgC3WBAIANxgQSAAcI0FgQDAPywoBwBm7kIe8ocOBs4p8hHnT6DYfCx3oYkZWC0XAGhTO8wOZteYdgGk+AG1g1g7L0R+ePilGMCWJ1A7iGX6kPIs1idT9AWWXIDaQUzyPVQc+e3bCz2DRXMKtYNp3cZ7LITI/yozcMgFqB3M+DZe40n69q0fALgpBqgdxGL1N74n0jH55fE3ZbQBqL1E7WAWezmzz5uU74P0Xb/3AajdRO1g4qM24zFOX7Z+AUADFR9+UwEwAAAAAElFTkSuQmCC">
+
+<!-- Χρώμα θέματος για Android -->
+<meta name="theme-color" content="#e91e63">
+<meta name="msapplication-TileColor" content="#e91e63">
+<meta name="msapplication-navbutton-color" content="#e91e63">
+
+<!-- Προσθήκη web app manifest για PWA -->
+<link rel="manifest" href="data:application/manifest+json,{
+  \"name\": \"BudgetBuddy Έξοδα Σπιτιού\",
+  \"short_name\": \"BudgetBuddy\",
+  \"description\": \"Διαχείριση οικογενειακών εξόδων\",
+  \"start_url\": \".\",
+  \"display\": \"standalone\",
+  \"background_color\": \"#ffe6f1\",
+  \"theme_color\": \"#e91e63\",
+  \"icons\": [
+    {
+      \"src\": \"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90' fill='%23e91e63'>🌸</text></svg>\",
+      \"sizes\": \"any\",
+      \"type\": \"image/svg+xml\"
+    }
+  ]
+}">
+
+<!-- Apple specific meta tags -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BudgetBuddy">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
 <title>BudgetBuddy — Έξοδα Σπιτιού</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>">
 <style>
@@ -577,7 +611,36 @@
     .final-summary {
       padding: 15px;
     }
-  }
+    
+    /* ΝΕΑ RULES ΠΡΟΣΘΗΚΗ */
+    body {
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    
+    p, li, td, th {
+      font-size: 15px;
+    }
+} /* ΚΛΕΙΣΕ ΕΔΩ ΤΟ MEDIA QUERY! */
+
+/* ΠΡΟΣΘΕΣΕ ΑΥΤΑ ΕΞΩ ΑΠΟ ΤΟ MEDIA QUERY */
+/* Προσθήκη touch feedback */
+button:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+/* Βελτίωση εμφάνισης dropdowns σε iOS */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e91e63' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
 </style>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
