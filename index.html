@@ -210,12 +210,27 @@
     cursor: pointer;
   }
 
-  button.add { background: #e91e63; color: white; border: none; }
+  button.add { 
+    background: #e91e63; 
+    color: white; 
+    border: none; 
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 15px;
+  }
   button.del { background: #f44336; color: white; border: none; }
   button.cat { background: #ff80ab; color: white; border: none; }
   button.recurring { background: #4caf50; color: white; border: none; margin-top: 10px; }
   button.edit { background: #2196f3; color: white; border: none; padding: 4px 8px; font-size: 12px; }
-  button.bank { background: #9c27b0; color: white; border: none; }
+  button.bank { 
+    background: #9c27b0; 
+    color: white; 
+    border: none; 
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
 
   table {
     width: 100%;
@@ -406,6 +421,69 @@
     background: #e91e63;
   }
 
+  /* Νέες κλάσεις για βελτιωμένο layout */
+  .add-expense-form {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto 1fr auto;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .amount-input-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  
+  .amount-input-wrapper::before {
+    content: "€";
+    position: absolute;
+    left: 10px;
+    color: #e91e63;
+    font-weight: bold;
+    z-index: 1;
+  }
+  
+  #amount {
+    padding-left: 30px;
+    width: 120px;
+    background: transparent;
+  }
+  
+  .add-button-wrapper {
+    grid-column: span 1;
+  }
+  
+  .category-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+  }
+  
+  /* Εικονίδιο ευρώ για αποθήκευση */
+  .save-success-euro {
+    display: inline-block;
+    background: #e91e63;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    font-weight: bold;
+    margin-right: 5px;
+    animation: euroPulse 0.5s ease-in-out;
+  }
+  
+  @keyframes euroPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
   @media (max-width: 768px) {
     .container {
       margin: 80px 10px 20px;
@@ -440,6 +518,39 @@
       padding: 15px;
     }
     
+    /* Βελτιωμένο responsive για φόρμα προσθήκης εξόδων */
+    .add-expense-form {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    
+    .amount-input-wrapper {
+      width: 100%;
+    }
+    
+    #amount {
+      width: 100%;
+    }
+    
+    .add-button-wrapper {
+      grid-column: span 1;
+      width: 100%;
+    }
+    
+    button.add {
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .category-row {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    
+    #category, #date, #note {
+      width: 100%;
+    }
+    
     input, select, button {
       margin-bottom: 8px;
       width: 100%;
@@ -467,6 +578,12 @@
     
     .final-summary {
       padding: 15px;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .add-expense-form {
+      grid-template-columns: auto auto 1fr auto 1fr auto;
     }
   }
 </style>
@@ -539,17 +656,29 @@
   </div>
 
   <h3>➕ Καταχώρηση εξόδου</h3>
-  <div>
-    <label>Ποσό (€):</label>
-    <input type="number" id="amount" step="0.01" style="width:100px;" placeholder="0.00">
-    <label>Κατηγορία:</label>
+  
+  <!-- Βελτιωμένη φόρμα προσθήκης εξόδων -->
+  <div class="add-expense-form">
+    <div class="amount-input-wrapper">
+      <input type="number" id="amount" step="0.01" placeholder="0.00" style="width:100px;">
+    </div>
+    
+    <div class="add-button-wrapper">
+      <button class="add" onclick="addExpense()" id="addExpenseButton">
+        <span>➕</span> Προσθήκη
+      </button>
+    </div>
+    
+    <label style="text-align: right;">Κατηγορία:</label>
     <select id="category"></select>
-    <label>Ημερομηνία:</label>
+    
+    <label style="text-align: right;">Ημερομηνία:</label>
     <input type="date" id="date" value="">
-    <br><br>
+  </div>
+  
+  <div class="category-row">
     <label>Σημείωση:</label>
-    <input type="text" id="note" placeholder="π.χ. ψώνια σούπερ μάρκετ" style="width:250px;">
-    <button class="add" onclick="addExpense()">Προσθήκη</button>
+    <input type="text" id="note" placeholder="π.χ. ψώνια σούπερ μάρκετ" style="flex: 1;">
   </div>
 
   <h3>💰 Διαχείριση τραπεζικών υπολοίπων</h3>
@@ -572,7 +701,10 @@
         <input type="number" id="expectedIncome" step="0.01" placeholder="0.00" style="width:100%;">
       </div>
     </div>
-    <button class="bank" onclick="saveBankBalances()" style="margin-top: 15px;">💾 Αποθήκευση Υπολοίπων</button>
+    <button class="bank" onclick="saveBankBalances()" style="margin-top: 15px;">
+      <span class="save-success-euro" id="bankSaveEuro" style="display: none;">€</span>
+      💾 Αποθήκευση Υπολοίπων
+    </button>
   </div>
 
   <h3>⚙️ Διαχείριση κατηγοριών</h3>
@@ -733,6 +865,16 @@ function showQuickMessage(message, type = 'info') {
       }
     `;
     document.head.appendChild(style);
+  }
+}
+
+function showEuroIcon(elementId) {
+  const euroIcon = document.getElementById(elementId);
+  if (euroIcon) {
+    euroIcon.style.display = 'inline-block';
+    setTimeout(() => {
+      euroIcon.style.display = 'none';
+    }, 1500);
   }
 }
 
@@ -1259,16 +1401,24 @@ function initFields() {
   const today = new Date().toISOString().slice(0,10);
   document.getElementById('date').value = today;
   
-  document.getElementById('alphaBank').value = bankBalances.alphaBank || 0;
-  document.getElementById('nationalBank').value = bankBalances.nationalBank || 0;
-  document.getElementById('cash').value = bankBalances.cash || 0;
-  document.getElementById('expectedIncome').value = bankBalances.expectedIncome || 0;
+  // Κενά πεδία ποσών (χωρίς μηδενικά)
+  document.getElementById('alphaBank').value = '';
+  document.getElementById('nationalBank').value = '';
+  document.getElementById('cash').value = '';
+  document.getElementById('expectedIncome').value = '';
+  
+  // Επανάληψη των υπαρχόντων τιμών μόνο αν είναι > 0
+  if (bankBalances.alphaBank > 0) document.getElementById('alphaBank').value = bankBalances.alphaBank;
+  if (bankBalances.nationalBank > 0) document.getElementById('nationalBank').value = bankBalances.nationalBank;
+  if (bankBalances.cash > 0) document.getElementById('cash').value = bankBalances.cash;
+  if (bankBalances.expectedIncome > 0) document.getElementById('expectedIncome').value = bankBalances.expectedIncome;
   
   updateCategoriesList();
   updateRecurringInputs();
 }
 
 function saveBankBalances() {
+  // Λαμβάνουμε τιμές, αν είναι κενές τότε 0
   bankBalances = {
     alphaBank: parseFloat(document.getElementById('alphaBank').value) || 0,
     nationalBank: parseFloat(document.getElementById('nationalBank').value) || 0,
@@ -1277,6 +1427,7 @@ function saveBankBalances() {
   };
   
   saveAllData();
+  showEuroIcon('bankSaveEuro');
   showQuickMessage('💰 Τα τραπεζικά υπόλοιπα αποθηκεύτηκαν!', 'success');
   render();
 }
@@ -1356,13 +1507,13 @@ function updateRecurringInputs() {
           <label style="display: inline-block; width: 200px; vertical-align: middle;">${category}:</label>
           <input type="number" 
                  id="${uniqueId}" 
-                 value="${amount}" 
+                 value="${amount > 0 ? amount : ''}" 
                  step="0.01" 
                  style="width: 100px; vertical-align: middle;"
                  onchange="updateSingleRecurringAmount('${category}', this.value)">
           €
           <span style="margin-left: 10px; color: #666; font-size: 12px;">
-            (Τρέχουσα τιμή: ${amount} €)
+            ${amount > 0 ? `(Τρέχουσα τιμή: ${amount} €)` : '(Δεν έχει οριστεί)'}
           </span>
         </div>
       `;
@@ -1380,7 +1531,7 @@ function updateSingleRecurringAmount(category, value) {
   if (inputElement) {
     const span = inputElement.nextElementSibling?.nextElementSibling;
     if (span) {
-      span.textContent = ` (Τρέχουσα τιμή: ${numValue} €)`;
+      span.textContent = numValue > 0 ? ` (Τρέχουσα τιμή: ${numValue} €)` : '(Δεν έχει οριστεί)';
     }
   }
   
@@ -1498,10 +1649,21 @@ function addExpense() {
   
   expenses.push(newExpense);
   
+  // Καθαρισμός μόνο του ποσού και της σημείωσης
   document.getElementById('amount').value = '';
   document.getElementById('note').value = '';
   
   saveAllData();
+  
+  // Προσθήκη εικονιδίου ευρώ στο κουμπί
+  const addButton = document.getElementById('addExpenseButton');
+  const originalHTML = addButton.innerHTML;
+  addButton.innerHTML = '<span class="save-success-euro">€</span>' + originalHTML;
+  
+  setTimeout(() => {
+    addButton.innerHTML = originalHTML;
+  }, 1000);
+  
   showQuickMessage(`✅ Προστέθηκε έξοδο ${category} - ${amount.toFixed(2)}€`, 'success');
 }
 
@@ -1627,6 +1789,51 @@ function save() {
 document.getElementById('income').addEventListener('input', () => save());
 document.getElementById('month').addEventListener('input', () => render());
 
+// Προσθήκη Enter support για όλα τα πεδία
+function setupEnterKeySupport() {
+  // Συνάρτηση που καλείται όταν πατιέται Enter
+  function handleEnterKey(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      
+      // Αν είμαστε σε πεδίο ποσού, προσθήκη εξόδου
+      if (event.target.id === 'amount') {
+        addExpense();
+      }
+      // Αν είμαστε σε σημείωση, επίσης προσθήκη εξόδου
+      else if (event.target.id === 'note') {
+        addExpense();
+      }
+      // Αν είμαστε σε κατηγορία, εστίαση στη σημείωση
+      else if (event.target.id === 'category') {
+        document.getElementById('note').focus();
+      }
+      // Αν είμαστε σε τραπεζικά υπόλοιπα, αποθήκευση
+      else if (['alphaBank', 'nationalBank', 'cash', 'expectedIncome'].includes(event.target.id)) {
+        saveBankBalances();
+      }
+      // Αν είμαστε σε νέα κατηγορία, προσθήκη κατηγορίας
+      else if (event.target.id === 'newCategoryName') {
+        addNewCategory();
+      }
+    }
+  }
+  
+  // Προσθήκη event listeners για όλα τα σχετικά πεδία
+  const inputFields = [
+    'amount', 'note', 'category', 'date',
+    'alphaBank', 'nationalBank', 'cash', 'expectedIncome',
+    'newCategoryName'
+  ];
+  
+  inputFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.addEventListener('keydown', handleEnterKey);
+    }
+  });
+}
+
 window.onload = function() {
   // Δημιουργία αστεριών
   const starsContainer = document.getElementById('stars');
@@ -1653,6 +1860,9 @@ window.onload = function() {
   // Αρχικοποίηση εφαρμογής
   initFields();
   render();
+  
+  // Ρύθμιση Enter key support
+  setupEnterKeySupport();
   
   // Έναρξη συγχρονισμού
   initSync();
