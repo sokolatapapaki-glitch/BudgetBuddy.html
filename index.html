@@ -463,9 +463,9 @@
     margin-top: 8px;
   }
   
-  /* Εικονίδιο ευρώ για αποθήκευση */
+  /* Εικονίδιο ευρώ για αποθήκευση - ΔΙΟΡΘΩΜΕΝΟ */
   .save-success-euro {
-    display: inline-block;
+    display: inline-block !important;
     background: #e91e63;
     color: white;
     width: 24px;
@@ -476,11 +476,12 @@
     font-weight: bold;
     margin-right: 5px;
     animation: euroPulse 0.5s ease-in-out;
+    vertical-align: middle;
   }
   
   @keyframes euroPulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
+    50% { transform: scale(1.3); }
     100% { transform: scale(1); }
   }
 
@@ -587,7 +588,6 @@
     }
   }
 </style>
-
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
@@ -867,11 +867,15 @@ function showQuickMessage(message, type = 'info') {
     document.head.appendChild(style);
   }
 }
-
 function showEuroIcon(elementId) {
   const euroIcon = document.getElementById(elementId);
   if (euroIcon) {
     euroIcon.style.display = 'inline-block';
+    // ΔΗΜΙΟΥΡΓΙΑ εικονιδίου αν δεν υπάρχει
+    if (!euroIcon.textContent) {
+      euroIcon.textContent = '€';
+      euroIcon.className = 'save-success-euro';
+    }
     setTimeout(() => {
       euroIcon.style.display = 'none';
     }, 1500);
@@ -1655,16 +1659,24 @@ function addExpense() {
   
   saveAllData();
   
-  // Προσθήκη εικονιδίου ευρώ στο κουμπί
+  // ΔΙΟΡΘΩΣΗ: Προσθήκη εικονιδίου ευρώ ΔΙΠΛΑ στο κουμπί (όχι μέσα σε αυτό)
   const addButton = document.getElementById('addExpenseButton');
-  const originalHTML = addButton.innerHTML;
-  addButton.innerHTML = '<span class="save-success-euro">€</span>' + originalHTML;
+  const euroSpan = document.createElement('span');
+  euroSpan.className = 'save-success-euro';
+  euroSpan.textContent = '€';
+  euroSpan.style.display = 'inline-block';
+  
+  // Προσθέτουμε το € δίπλα στο κουμπί
+  addButton.parentNode.insertBefore(euroSpan, addButton);
   
   setTimeout(() => {
-    addButton.innerHTML = originalHTML;
+    if (euroSpan.parentNode) {
+      euroSpan.parentNode.removeChild(euroSpan);
+    }
   }, 1000);
   
   showQuickMessage(`✅ Προστέθηκε έξοδο ${category} - ${amount.toFixed(2)}€`, 'success');
+  render();
 }
 
 function deleteExpense(id) {
