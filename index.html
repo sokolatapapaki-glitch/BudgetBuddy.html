@@ -178,16 +178,16 @@
   .quick-add-form {
     background: #fff0f7;
     border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 15px; /* Μείωση margin για να ανέβουν πιο πάνω */
+    padding: 15px;
+    margin-bottom: 15px;
     box-shadow: 0 4px 12px rgba(233, 30, 99, 0.1);
   }
 
   /* ΒΕΛΤΙΩΜΕΝΟ ΠΡΩΤΟ ROW - ΠΟΣΟ & ΚΟΥΜΠΙ */
   .first-row {
     display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
+    gap: 10px;
+    margin-bottom: 12px;
     align-items: flex-end;
   }
 
@@ -197,14 +197,15 @@
 
   .add-button-group {
     flex-shrink: 0;
+    width: 50px; /* Μικρό πλάτος για το κουμπί */
   }
 
   /* ΒΕΛΤΙΩΜΕΝΟ ΔΕΥΤΕΡΟ ROW - ΚΑΤΗΓΟΡΙΑ & ΗΜΕΡΟΜΗΝΙΑ */
   .second-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 15px;
+    gap: 12px;
+    margin-bottom: 12px;
   }
 
   /* ΒΕΛΤΙΩΜΕΝΟ ΤΡΙΤΟ ROW - ΣΗΜΕΙΩΣΗ */
@@ -218,10 +219,10 @@
   }
 
   .form-group label {
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     font-weight: 500;
     color: #e91e63;
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .amount-input-wrapper {
@@ -232,7 +233,7 @@
   .amount-input-wrapper::before {
     content: "€";
     position: absolute;
-    left: 12px;
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
     color: #e91e63;
@@ -242,23 +243,22 @@
   }
 
   .amount-input-wrapper input {
-    padding-left: 40px !important;
+    padding-left: 35px !important;
     font-size: 16px;
-    height: 50px;
+    height: 45px;
   }
 
   input, select, button {
-    padding: 12px;
+    padding: 10px;
     border-radius: 8px;
     border: 1px solid #ddd;
-    font-size: 16px;
+    font-size: 15px;
     box-sizing: border-box;
   }
 
   button {
     cursor: pointer;
     transition: all 0.3s;
-    height: 50px;
   }
 
   button.add { 
@@ -270,16 +270,34 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 0 25px;
-    white-space: nowrap;
-    min-width: 140px;
+    padding: 0;
+    width: 100%;
+    height: 45px;
+    min-width: 45px;
   }
 
   button.add:hover {
     background: #d81b60;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
+  }
+
+  /* KΟΥΜΠΙ ΔΙΑΓΡΑΦΗΣ ΓΙΑ ΚΑΘΕ ΕΞΟΔΟ */
+  .delete-expense-btn {
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 8px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 10px;
+    transition: all 0.3s;
+  }
+
+  .delete-expense-btn:hover {
+    background: #d32f2f;
+    transform: scale(1.1);
   }
 
   /* BUDGET OVERVIEW - TAB 2 */
@@ -479,17 +497,17 @@
     }
 
     .quick-add-form {
-      padding: 15px;
+      padding: 12px;
     }
 
     /* ΒΕΛΤΙΩΜΕΝΟ RESPONSIVE */
     .first-row {
-      flex-direction: column;
-      gap: 10px;
+      flex-direction: row; /* Κρατάει την ίδια διάταξη και σε mobile */
+      gap: 8px;
     }
 
     .add-button-group {
-      width: 100%;
+      width: 50px; /* Παραμένει μικρό */
     }
 
     button.add {
@@ -508,13 +526,22 @@
     }
 
     input, select, button {
-      font-size: 15px;
-      padding: 10px;
+      font-size: 14px;
+      padding: 8px;
     }
 
     .amount-input-wrapper input,
     button.add {
-      height: 48px;
+      height: 42px;
+    }
+    
+    .amount-input-wrapper input {
+      padding-left: 30px !important;
+    }
+    
+    .amount-input-wrapper::before {
+      left: 8px;
+      font-size: 14px;
     }
   }
 
@@ -535,12 +562,19 @@
     }
 
     .quick-add-form {
-      padding: 12px;
+      padding: 10px;
+    }
+    
+    .first-row {
+      gap: 5px;
+    }
+    
+    .second-row {
+      gap: 8px;
     }
 
     button.add {
-      font-size: 15px;
-      padding: 0 15px;
+      font-size: 20px; /* Μεγαλύτερο για σταυρό */
     }
   }
 
@@ -607,8 +641,8 @@
         </div>
         
         <div class="add-button-group">
-          <button class="add" onclick="addExpense()" id="addExpenseButton">
-            <span>➕</span> Προσθήκη
+          <button class="add" onclick="addExpense()" id="addExpenseButton" title="Προσθήκη εξόδου">
+            <span>➕</span>
           </button>
         </div>
       </div>
@@ -906,7 +940,7 @@ function initSync() {
     const firebaseConfig = {
       apiKey: "AIzaSyBaItM0-eOAwU6snAxfMU_bcp9xW0UfYzQ",
       authDomain: "travelcosts-48d64.firebaseapp.com",
-      databaseURL: https://travelcosts-48d64-default-rtdb.europe-west1.firebasedatabase.app",
+      databaseURL: "https://travelcosts-48d64-default-rtdb.europe-west1.firebasedatabase.app",
       projectId: "travelcosts-48d64",
       storageBucket: "travelcosts-48d64.firebasestorage.app",
       messagingSenderId: "792639383940",
@@ -1268,6 +1302,33 @@ function updateUIFromData() {
   updateBudgetOverview();
 }
 
+// ==================== ΝΕΑ ΛΕΙΤΟΥΡΓΙΑ: ΔΙΑΓΡΑΦΗ ΕΞΟΔΟΥ ====================
+function deleteExpense(expenseId) {
+  if (!confirm('Θέλετε σίγουρα να διαγράψετε αυτό το έξοδο;')) {
+    return;
+  }
+  
+  // Βρες και αφαίρεσε το έξοδο από τον πίνακα
+  const expenseIndex = expenses.findIndex(exp => exp.id === expenseId);
+  if (expenseIndex !== -1) {
+    // Αποθήκευσε πληροφορίες για το μήνυμα επιβεβαίωσης
+    const deletedExpense = expenses[expenseIndex];
+    
+    // Αφαίρεσε το έξοδο
+    expenses.splice(expenseIndex, 1);
+    
+    // Αποθήκευσε τα νέα δεδομένα
+    saveAllData();
+    
+    // Ενημέρωσε την εμφάνιση
+    updateRecentExpenses();
+    updateBudgetOverview();
+    
+    // Εμφάνισε μήνυμα επιβεβαίωσης
+    showQuickMessage(`🗑️ Διαγράφηκε έξοδο ${deletedExpense.category} - ${deletedExpense.amount.toFixed(2)}€`, 'success');
+  }
+}
+
 function updateRecentExpenses() {
   const recentExpensesDiv = document.getElementById('recentExpenses');
   const recentExpenses = expenses.slice(-10).reverse(); // 10 πιο πρόσφατα
@@ -1289,7 +1350,12 @@ function updateRecentExpenses() {
           <div class="expense-category">${expense.category}</div>
           <div class="expense-details">${expense.date} | ${expense.note || '-'}</div>
         </div>
-        <div class="expense-amount">${expense.amount.toFixed(2)} €</div>
+        <div style="display: flex; align-items: center;">
+          <div class="expense-amount">${expense.amount.toFixed(2)} €</div>
+          <button class="delete-expense-btn" onclick="deleteExpense(${expense.id})" title="Διαγραφή εξόδου">
+            🗑️
+          </button>
+        </div>
       </div>
     `;
   });
@@ -1590,7 +1656,7 @@ function addExpense() {
   const originalHTML = addButton.innerHTML;
   const originalBackground = addButton.style.background;
   
-  addButton.innerHTML = '<span>✅</span> Προστέθηκε!';
+  addButton.innerHTML = '<span>✅</span>';
   addButton.style.background = '#4caf50';
   
   setTimeout(() => {
