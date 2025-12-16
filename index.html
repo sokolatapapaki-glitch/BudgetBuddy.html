@@ -179,7 +179,7 @@
     background: #fff0f7;
     border-radius: 12px;
     padding: 25px;
-    margin-bottom: 30px;
+    margin-bottom: 20px; /* Μείωση margin */
     box-shadow: 0 4px 12px rgba(233, 30, 99, 0.1);
   }
 
@@ -604,8 +604,7 @@
   <!-- TAB 1: ΠΡΟΣΘΗΚΗ -->
   <div id="tab1" class="tab-content active">
     <div class="quick-add-form">
-      <h2>➕ Γρήγορη Προσθήκη Εξόδου</h2>
-      <p style="color: #666; margin-bottom: 20px;">Καταχωρήστε έξοδο εύκολα και γρήγορα ενώ είστε έξω!</p>
+      <h2>➕ Προσθήκη Εξόδου</h2>
       
       <!-- ΒΕΛΤΙΩΜΕΝΟ: ΠΟΣΟ & ΚΟΥΜΠΙ ΣΤΗΝ ΙΔΙΑ ΓΡΑΜΜΗ -->
       <div class="first-row">
@@ -643,7 +642,7 @@
       </div>
     </div>
 
-    <div style="margin-top: 30px;">
+    <div style="margin-top: 20px;">
       <h3 style="color: #e91e63; margin-bottom: 10px;">📋 Πρόσφατα έξοδα</h3>
       <div class="recent-expenses-container" id="recentExpenses">
         <!-- Θα εμφανίζονται εδώ τα πρόσφατα έξοδα -->
@@ -684,7 +683,6 @@
   <!-- TAB 3: ΤΡΑΠΕΖΕΣ -->
   <div id="tab3" class="tab-content">
     <h2 style="color: #e91e63; margin-top: 0;">💰 Τραπεζικά Υπόλοιπα</h2>
-    <p style="color: #666; margin-bottom: 20px;">Καταχωρήστε τα τρέχοντα υπόλοιπά σας:</p>
     
     <div class="bank-cards">
       <div class="bank-card">
@@ -739,7 +737,6 @@
     
     <div class="settings-section">
       <h3>💰 Μηνιαίοι Προϋπολογισμοί</h3>
-      <p style="color: #666; margin-bottom: 15px;">Ορίστε τον προϋπολογισμό για κάθε κατηγορία:</p>
       <div id="recurringInputs"></div>
       <button class="add" onclick="saveRecurringAmounts()" style="margin-top: 15px; width: 100%;">
         <span>💾</span> Αποθήκευση Προϋπολογισμών
@@ -748,7 +745,6 @@
     
     <div class="settings-section">
       <h3>🔗 Συγχρονισμός</h3>
-      <p style="color: #666; margin-bottom: 15px;">Συνδέστε 2 ή περισσότερα κινητά για να έχετε τα ίδια δεδομένα!</p>
       <div id="syncStatusInfo" style="margin-bottom: 15px;"></div>
       <button class="add" onclick="showSyncModal()" style="width: 100%;">
         <span>🔗</span> Διαχείριση Συγχρονισμού
