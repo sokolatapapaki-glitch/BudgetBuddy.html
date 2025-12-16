@@ -300,6 +300,55 @@
     transform: scale(1.1);
   }
 
+  /* DRAG & DROP ΓΙΑ ΚΑΤΗΓΟΡΙΕΣ */
+  .category-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: #e91e63;
+    color: white;
+    border-radius: 20px;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(233, 30, 99, 0.2);
+    cursor: grab;
+    user-select: none;
+    transition: all 0.3s;
+  }
+
+  .category-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(233, 30, 99, 0.3);
+  }
+
+  .category-tag:active {
+    cursor: grabbing;
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(233, 30, 99, 0.4);
+  }
+
+  .category-tag.dragging {
+    opacity: 0.5;
+    background: #ff80ab;
+  }
+
+  .categories-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+    min-height: 50px;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    border: 2px dashed #e0e0e0;
+  }
+
+  .categories-list.drag-over {
+    background: #f0f8ff;
+    border-color: #e91e63;
+  }
+
   /* BUDGET OVERVIEW - TAB 2 */
   .budget-cards {
     display: grid;
@@ -384,25 +433,6 @@
     margin-top: 0;
     border-bottom: 2px solid #ffe6f1;
     padding-bottom: 10px;
-  }
-
-  .categories-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 15px 0;
-  }
-
-  .category-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 15px;
-    background: #e91e63;
-    color: white;
-    border-radius: 20px;
-    font-size: 14px;
-    box-shadow: 0 2px 5px rgba(233, 30, 99, 0.2);
   }
 
   /* MODALS */
@@ -542,6 +572,11 @@
     .amount-input-wrapper::before {
       left: 8px;
       font-size: 14px;
+    }
+    
+    .category-tag {
+      padding: 6px 12px;
+      font-size: 13px;
     }
   }
 
@@ -749,6 +784,8 @@
     
     <div class="settings-section">
       <h3>📂 Διαχείριση Κατηγοριών</h3>
+      <p style="color: #666; font-size: 13px; margin-bottom: 10px;">🎯 <strong>Σύρτε</strong> τις κατηγορίες για να αλλάξετε τη σειρά τους!</p>
+      
       <div style="display: flex; gap: 10px; margin-bottom: 15px;">
         <input type="text" id="newCategoryName" placeholder="Όνομα νέας κατηγορίας" style="flex: 1;" autocomplete="off">
         <button class="add" onclick="addNewCategory()" style="width: auto; padding: 12px 20px;">
@@ -808,6 +845,10 @@ let syncData = JSON.parse(localStorage.getItem('budgetbuddy_sync') || '{}');
 let currentUser = syncData.userName || "Οικογένεια";
 let currentBudget = syncData.budgetCode || null;
 let firebaseRef = null;
+
+// Μεταβλητές για drag & drop
+let draggedCategory = null;
+let dragStartIndex = null;
 
 // ==================== TABS FUNCTIONALITY ====================
 function switchTab(tabNumber) {
@@ -1260,6 +1301,127 @@ function generateSyncCode() {
   return code;
 }
 
+// ==================== DRAG & DROP ΓΙΑ ΚΑΤΗΓΟΡΙΕΣ ====================
+function setupDragAndDrop() {
+  const categoriesList = document.getElementById('categoriesList');
+  const categoryTags = document.querySelectorAll('.category-tag');
+  
+  // Εκκαθάριση προηγούμενων event listeners
+  categoryTags.forEach(tag => {
+    tag.removeEventListener('dragstart', handleDragStart);
+    tag.removeEventListener('dragend', handleDragEnd);
+  });
+  
+  categoriesList.removeEventListener('dragover', handleDragOver);
+  categoriesList.removeEventListener('dragenter', handleDragEnter);
+  categoriesList.removeEventListener('dragleave', handleDragLeave);
+  categoriesList.removeEventListener('drop', handleDrop);
+  
+  // Προσθήκη νέων event listeners
+  categoryTags.forEach((tag, index) => {
+    tag.setAttribute('draggable', 'true');
+    tag.setAttribute('data-index', index);
+    
+    tag.addEventListener('dragstart', handleDragStart);
+    tag.addEventListener('dragend', handleDragEnd);
+  });
+  
+  categoriesList.addEventListener('dragover', handleDragOver);
+  categoriesList.addEventListener('dragenter', handleDragEnter);
+  categoriesList.addEventListener('dragleave', handleDragLeave);
+  categoriesList.addEventListener('drop', handleDrop);
+}
+
+function handleDragStart(e) {
+  draggedCategory = this;
+  dragStartIndex = parseInt(this.getAttribute('data-index'));
+  this.classList.add('dragging');
+  
+  // Ρυθμίστε την εικόνα drag για να λειτουργεί καλύτερα
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', this.textContent);
+  
+  // Προσθήκη μικρής καθυστέρησης για να μπορεί να γίνει drop
+  setTimeout(() => {
+    this.style.display = 'none';
+  }, 0);
+}
+
+function handleDragEnd(e) {
+  this.classList.remove('dragging');
+  this.style.display = 'flex';
+  
+  // Επαναφορά του στυλ της λίστας κατηγοριών
+  const categoriesList = document.getElementById('categoriesList');
+  categoriesList.classList.remove('drag-over');
+  
+  draggedCategory = null;
+  dragStartIndex = null;
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  return false;
+}
+
+function handleDragEnter(e) {
+  e.preventDefault();
+  const categoriesList = document.getElementById('categoriesList');
+  categoriesList.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+  const categoriesList = document.getElementById('categoriesList');
+  // Ελέγξτε αν το ποντίκι βγαίνει από τη λίστα
+  if (!categoriesList.contains(e.relatedTarget)) {
+    categoriesList.classList.remove('drag-over');
+  }
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  const categoriesList = document.getElementById('categoriesList');
+  categoriesList.classList.remove('drag-over');
+  
+  if (!draggedCategory) return;
+  
+  // Βρείτε το στοιχείο πάνω στο οποίο γίνεται το drop
+  const dropTarget = e.target.closest('.category-tag');
+  
+  if (dropTarget && dropTarget !== draggedCategory) {
+    const dropIndex = parseInt(dropTarget.getAttribute('data-index'));
+    
+    // Αναδιοργάνωση του πίνακα κατηγοριών
+    const categoryToMove = categories[dragStartIndex];
+    categories.splice(dragStartIndex, 1); // Αφαίρεση από την παλιά θέση
+    categories.splice(dropIndex, 0, categoryToMove); // Εισαγωγή στη νέα θέση
+    
+    // Αναδιοργάνωση του recurringAmounts
+    const newRecurringAmounts = {};
+    categories.forEach(category => {
+      if (recurringAmounts[category] !== undefined) {
+        newRecurringAmounts[category] = recurringAmounts[category];
+      } else {
+        newRecurringAmounts[category] = 0;
+      }
+    });
+    recurringAmounts = newRecurringAmounts;
+    
+    // Αποθήκευση και ανανέωση
+    saveAllData();
+    updateCategoriesList();
+    updateRecurringInputs();
+    updateUIFromData();
+    
+    showQuickMessage('🔄 Αλλάχτηκε η σειρά των κατηγοριών!', 'success');
+  }
+  
+  return false;
+}
+
 // ==================== MAIN APP FUNCTIONS ====================
 function cleanupData() {
   categories = categories.filter(cat => cat && typeof cat === 'string' && cat.trim() !== '');
@@ -1489,7 +1651,8 @@ function updateCategoriesList() {
   let html = '';
   categories.forEach((category, index) => {
     html += `
-      <div class="category-tag">
+      <div class="category-tag" data-index="${index}">
+        <span style="margin-right: 5px;">☰</span>
         ${category}
         <button onclick="deleteCategory(${index})" title="Διαγραφή" style="background: transparent; border: none; color: white; cursor: pointer; padding: 0; margin-left: 5px; font-size: 16px;">×</button>
       </div>
@@ -1497,6 +1660,11 @@ function updateCategoriesList() {
   });
   
   categoriesListDiv.innerHTML = html;
+  
+  // Ρύθμιση drag & drop μετά την ενημέρωση του DOM
+  setTimeout(() => {
+    setupDragAndDrop();
+  }, 100);
 }
 
 function addNewCategory() {
