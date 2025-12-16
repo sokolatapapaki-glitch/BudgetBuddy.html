@@ -174,7 +174,7 @@
     50% { opacity: 0.5; }
   }
 
-  /* QUICK ADD FORM - TAB 1 */
+  /* ============ ΒΕΛΤΙΩΜΕΝΟ QUICK ADD FORM - TAB 1 ============ */
   .quick-add-form {
     background: #fff0f7;
     border-radius: 12px;
@@ -183,11 +183,40 @@
     box-shadow: 0 4px 12px rgba(233, 30, 99, 0.1);
   }
 
-  .form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  .quick-add-form h2 {
+    color: #e91e63;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+  }
+
+  /* ΒΕΛΤΙΩΜΕΝΟ ΠΡΩΤΟ ROW - ΠΟΣΟ & ΚΟΥΜΠΙ */
+  .first-row {
+    display: flex;
     gap: 15px;
     margin-bottom: 15px;
+    align-items: flex-end;
+  }
+
+  .amount-group {
+    flex: 1;
+  }
+
+  .add-button-group {
+    flex-shrink: 0;
+  }
+
+  /* ΒΕΛΤΙΩΜΕΝΟ ΔΕΥΤΕΡΟ ROW - ΚΑΤΗΓΟΡΙΑ & ΗΜΕΡΟΜΗΝΙΑ */
+  .second-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  /* ΒΕΛΤΙΩΜΕΝΟ ΤΡΙΤΟ ROW - ΣΗΜΕΙΩΣΗ */
+  .note-row {
+    margin-bottom: 0;
   }
 
   .form-group {
@@ -204,6 +233,7 @@
 
   .amount-input-wrapper {
     position: relative;
+    width: 100%;
   }
 
   .amount-input-wrapper::before {
@@ -215,10 +245,13 @@
     color: #e91e63;
     font-weight: bold;
     z-index: 1;
+    font-size: 16px;
   }
 
   .amount-input-wrapper input {
-    padding-left: 35px !important;
+    padding-left: 40px !important;
+    font-size: 16px;
+    height: 50px;
   }
 
   input, select, button {
@@ -226,13 +259,13 @@
     border-radius: 8px;
     border: 1px solid #ddd;
     font-size: 16px;
-    width: 100%;
     box-sizing: border-box;
   }
 
   button {
     cursor: pointer;
     transition: all 0.3s;
+    height: 50px;
   }
 
   button.add { 
@@ -245,8 +278,9 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 14px;
-    margin-top: 10px;
+    padding: 0 25px;
+    white-space: nowrap;
+    min-width: 140px;
   }
 
   button.add:hover {
@@ -386,6 +420,54 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   }
 
+  /* RECENT EXPENSES */
+  .recent-expenses-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 15px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+  }
+
+  .expense-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: white;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
+  }
+
+  .expense-item:last-child {
+    border-bottom: none;
+  }
+
+  .expense-item:hover {
+    background: #f9f9f9;
+  }
+
+  .expense-info {
+    flex: 1;
+  }
+
+  .expense-category {
+    font-weight: bold;
+    color: #333;
+  }
+
+  .expense-details {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+  }
+
+  .expense-amount {
+    font-weight: bold;
+    color: #e91e63;
+    font-size: 16px;
+  }
+
   /* RESPONSIVE */
   @media (max-width: 768px) {
     .container {
@@ -407,8 +489,24 @@
       padding: 20px;
     }
 
-    .form-row {
+    /* ΒΕΛΤΙΩΜΕΝΟ RESPONSIVE */
+    .first-row {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .add-button-group {
+      width: 100%;
+    }
+
+    button.add {
+      width: 100%;
+      min-width: unset;
+    }
+
+    .second-row {
       grid-template-columns: 1fr;
+      gap: 10px;
     }
 
     .budget-cards,
@@ -419,6 +517,11 @@
     input, select, button {
       font-size: 15px;
       padding: 10px;
+    }
+
+    .amount-input-wrapper input,
+    button.add {
+      height: 48px;
     }
   }
 
@@ -437,6 +540,25 @@
       margin: 130px 5px 10px;
       padding: 10px 15px;
     }
+
+    .quick-add-form {
+      padding: 15px;
+    }
+
+    button.add {
+      font-size: 15px;
+      padding: 0 15px;
+    }
+  }
+
+  /* ΕΙΔΙΚΗ ΚΛΑΣΗ ΓΙΑ ΚΕΝΗ ΛΙΣΤΑ */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #777;
+    background: #f9f9f9;
+    border-radius: 10px;
+    font-style: italic;
   }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -482,17 +604,27 @@
   <!-- TAB 1: ΠΡΟΣΘΗΚΗ -->
   <div id="tab1" class="tab-content active">
     <div class="quick-add-form">
-      <h2 style="color: #e91e63; margin-top: 0;">➕ Γρήγορη Προσθήκη Εξόδου</h2>
+      <h2>➕ Γρήγορη Προσθήκη Εξόδου</h2>
       <p style="color: #666; margin-bottom: 20px;">Καταχωρήστε έξοδο εύκολα και γρήγορα ενώ είστε έξω!</p>
       
-      <div class="form-row">
-        <div class="form-group">
+      <!-- ΒΕΛΤΙΩΜΕΝΟ: ΠΟΣΟ & ΚΟΥΜΠΙ ΣΤΗΝ ΙΔΙΑ ΓΡΑΜΜΗ -->
+      <div class="first-row">
+        <div class="amount-group form-group">
           <label>💰 Ποσό (€)</label>
           <div class="amount-input-wrapper">
-            <input type="number" id="amount" step="0.01" placeholder="0.00" min="0.01">
+            <input type="number" id="amount" step="0.01" placeholder="0.00" min="0.01" autocomplete="off">
           </div>
         </div>
         
+        <div class="add-button-group">
+          <button class="add" onclick="addExpense()" id="addExpenseButton">
+            <span>➕</span> Προσθήκη
+          </button>
+        </div>
+      </div>
+      
+      <!-- ΚΑΤΗΓΟΡΙΑ & ΗΜΕΡΟΜΗΝΙΑ -->
+      <div class="second-row">
         <div class="form-group">
           <label>📂 Κατηγορία</label>
           <select id="category"></select>
@@ -504,19 +636,16 @@
         </div>
       </div>
       
-      <div class="form-group">
+      <!-- ΣΗΜΕΙΩΣΗ -->
+      <div class="form-group note-row">
         <label>📝 Σημείωση (προαιρετικό)</label>
-        <input type="text" id="note" placeholder="π.χ. ψώνια σούπερ μάρκετ">
+        <input type="text" id="note" placeholder="π.χ. ψώνια σούπερ μάρκετ" autocomplete="off">
       </div>
-      
-      <button class="add" onclick="addExpense()" id="addExpenseButton">
-        <span>➕</span> Προσθήκη Εξόδου
-      </button>
     </div>
 
     <div style="margin-top: 30px;">
-      <h3>📋 Πρόσφατα έξοδα</h3>
-      <div id="recentExpenses" style="max-height: 300px; overflow-y: auto; margin-top: 15px;">
+      <h3 style="color: #e91e63; margin-bottom: 10px;">📋 Πρόσφατα έξοδα</h3>
+      <div class="recent-expenses-container" id="recentExpenses">
         <!-- Θα εμφανίζονται εδώ τα πρόσφατα έξοδα -->
       </div>
     </div>
@@ -560,22 +689,22 @@
     <div class="bank-cards">
       <div class="bank-card">
         <h4>🏛️ Αλφα Τράπεζα</h4>
-        <input type="number" id="alphaBank" step="0.01" placeholder="0.00" style="text-align: center; font-size: 18px;">
+        <input type="number" id="alphaBank" step="0.01" placeholder="0.00" style="text-align: center; font-size: 18px;" autocomplete="off">
       </div>
       
       <div class="bank-card">
         <h4>🇬🇷 Εθνική Τράπεζα</h4>
-        <input type="number" id="nationalBank" step="0.01" placeholder="0.00" style="text-align: center; font-size: 18px;">
+        <input type="number" id="nationalBank" step="0.01" placeholder="0.00" style="text-align: center; font-size: 18px;" autocomplete="off">
       </div>
       
       <div class="bank-card">
         <h4>💵 Μετρητά</h4>
-        <input type="number" id="cash" step="0.01" placeholder="0.00" style="text-align: center; font-size: 18px;">
+        <input type="number" id="cash" step="0.01" placeholder="0.00" style="text-align: center; font-size: 18px;" autocomplete="off">
       </div>
       
       <div class="bank-card">
         <h4>📈 Θα πάρω ακόμα</h4>
-        <input type="number" id="expectedIncome" step="0.01" placeholder="0.00" style="text-align: center; font-size: 18px;">
+        <input type="number" id="expectedIncome" step="0.01" placeholder="0.00" style="text-align: center; font-size: 18px;" autocomplete="off">
       </div>
     </div>
     
@@ -598,7 +727,7 @@
     <div class="settings-section">
       <h3>📂 Διαχείριση Κατηγοριών</h3>
       <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-        <input type="text" id="newCategoryName" placeholder="Όνομα νέας κατηγορίας" style="flex: 1;">
+        <input type="text" id="newCategoryName" placeholder="Όνομα νέας κατηγορίας" style="flex: 1;" autocomplete="off">
         <button class="add" onclick="addNewCategory()" style="width: auto; padding: 12px 20px;">
           <span>➕</span> Προσθήκη
         </button>
@@ -722,6 +851,25 @@ function showQuickMessage(message, type = 'info') {
     msg.style.animation = 'fadeOut 0.5s ease-in-out';
     setTimeout(() => msg.remove(), 500);
   }, 3000);
+}
+
+// Δημιουργία CSS animations αν δεν υπάρχουν
+if (!document.getElementById('msg-styles')) {
+  const style = document.createElement('style');
+  style.id = 'msg-styles';
+  style.textContent = `
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
 }
 
 // ==================== ΣΥΓΧΡΟΝΙΣΜΟΣ ====================
@@ -1139,7 +1287,7 @@ function updateRecentExpenses() {
   
   if (recentExpenses.length === 0) {
     recentExpensesDiv.innerHTML = `
-      <div style="text-align: center; padding: 30px; color: #777; background: #f9f9f9; border-radius: 10px;">
+      <div class="empty-state">
         📭 Δεν υπάρχουν καταχωρημένα έξοδα ακόμα
       </div>
     `;
@@ -1149,12 +1297,12 @@ function updateRecentExpenses() {
   let html = '';
   recentExpenses.forEach(expense => {
     html += `
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: white; margin-bottom: 8px; border-radius: 8px; border-left: 4px solid #e91e63;">
-        <div>
-          <div style="font-weight: bold;">${expense.category}</div>
-          <div style="font-size: 12px; color: #666;">${expense.date} | ${expense.note || '-'}</div>
+      <div class="expense-item">
+        <div class="expense-info">
+          <div class="expense-category">${expense.category}</div>
+          <div class="expense-details">${expense.date} | ${expense.note || '-'}</div>
         </div>
-        <div style="font-weight: bold; color: #e91e63;">${expense.amount.toFixed(2)} €</div>
+        <div class="expense-amount">${expense.amount.toFixed(2)} €</div>
       </div>
     `;
   });
@@ -1169,7 +1317,7 @@ function updateBudgetOverview() {
   
   if (categories.length === 0) {
     budgetCardsDiv.innerHTML = `
-      <div style="text-align: center; padding: 40px; color: #777; background: #f9f9f9; border-radius: 10px; grid-column: 1/-1;">
+      <div class="empty-state" style="grid-column: 1/-1;">
         📂 Δεν υπάρχουν κατηγορίες. Προσθέστε κάποιες από τις ρυθμίσεις!
       </div>
     `;
@@ -1281,7 +1429,7 @@ function updateCategoriesList() {
   const categoriesListDiv = document.getElementById('categoriesList');
   
   if (categories.length === 0) {
-    categoriesListDiv.innerHTML = '<div style="color:#777; text-align:center; padding:20px;">Δεν υπάρχουν κατηγορίες</div>';
+    categoriesListDiv.innerHTML = '<div class="empty-state">Δεν υπάρχουν κατηγορίες</div>';
     return;
   }
   
@@ -1290,7 +1438,7 @@ function updateCategoriesList() {
     html += `
       <div class="category-tag">
         ${category}
-        <button onclick="deleteCategory(${index})" title="Διαγραφή" style="background: transparent; border: none; color: white; cursor: pointer; padding: 0; margin-left: 5px;">×</button>
+        <button onclick="deleteCategory(${index})" title="Διαγραφή" style="background: transparent; border: none; color: white; cursor: pointer; padding: 0; margin-left: 5px; font-size: 16px;">×</button>
       </div>
     `;
   });
@@ -1450,15 +1598,17 @@ function addExpense() {
   
   saveAllData();
   
-  // Εμφάνιση επιβεβαίωσης
+  // Εμφάνιση επιβεβαίωσης στο κουμπί
   const addButton = document.getElementById('addExpenseButton');
-  const originalText = addButton.innerHTML;
+  const originalHTML = addButton.innerHTML;
+  const originalBackground = addButton.style.background;
+  
   addButton.innerHTML = '<span>✅</span> Προστέθηκε!';
   addButton.style.background = '#4caf50';
   
   setTimeout(() => {
-    addButton.innerHTML = originalText;
-    addButton.style.background = '#e91e63';
+    addButton.innerHTML = originalHTML;
+    addButton.style.background = originalBackground;
   }, 1500);
   
   showQuickMessage(`✅ Προστέθηκε έξοδο ${category} - ${amount.toFixed(2)}€`, 'success');
@@ -1466,6 +1616,9 @@ function addExpense() {
   // Ενημέρωση της εμφάνισης
   updateRecentExpenses();
   updateBudgetOverview();
+  
+  // Επιστροφή στην κατηγορία
+  document.getElementById('amount').focus();
 }
 
 // ==================== INITIALIZATION ====================
@@ -1499,16 +1652,32 @@ window.onload = function() {
   // Έναρξη συγχρονισμού
   initSync();
   
-  // Setup για Enter key
+  // Setup για Enter key - ΕΥΚΟΛΗ ΧΡΗΣΗ ΣΕ ΚΙΝΗΤΟ
   document.getElementById('amount').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
+      e.preventDefault();
       addExpense();
     }
   });
   
   document.getElementById('note').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
+      e.preventDefault();
       addExpense();
+    }
+  });
+  
+  document.getElementById('category').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('note').focus();
+    }
+  });
+  
+  document.getElementById('date').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('note').focus();
     }
   });
   
@@ -1518,6 +1687,9 @@ window.onload = function() {
       syncToFirebase();
     }
   }, 30000);
+  
+  // Αυτόματη εστίαση στο πεδίο ποσού όταν ανοίγει το tab 1
+  document.getElementById('amount').focus();
 };
 </script>
 </body>
