@@ -774,7 +774,7 @@
       
       <div style="display: flex; gap: 10px; margin-bottom: 15px;">
         <input type="text" id="newCategoryName" placeholder="Όνομα νέας κατηγορίας" style="flex: 1;" autocomplete="off">
-        <button class="add" onclick="addNewCategory()" style="width: auto; padding: 12px 20px;">
+        <button class="add" onclick="addNewCategory()" id="addCategoryButton" style="width: auto; padding: 12px 20px;">
           <span>➕</span> Προσθήκη
         </button>
       </div>
@@ -883,7 +883,6 @@ function initSync() {
     return;
   }
   
-  // Ελέγχουμε αν το Firebase έχει ήδη αρχικοποιηθεί
   if (firebase.apps.length === 0) {
     try {
       const firebaseConfig = {
@@ -908,12 +907,10 @@ function initSync() {
   
   updateSyncUI('connecting');
   
-  // Χρήση once αντί για on για μία φορά φόρτωση, όχι συνεχή ακροατή
   firebaseRef.once('value')
     .then((snapshot) => {
       const data = snapshot.val();
       if (data) {
-        // Συγχώνευση δεδομένων - προτεραιότητα στα τοπικά
         if (data.categories && data.categories.length > 0 && categories.length === 0) {
           categories = data.categories;
         }
@@ -943,11 +940,9 @@ function initSync() {
         updateUIFromData();
         updateSyncUI('online', data);
         
-        // Κάνε subscribe μόνο για αλλαγές, όχι για αρχική φόρτωση
         setupFirebaseListeners();
         
       } else {
-        // Δεν υπάρχει budget, δημιούργησε νέο
         createNewBudgetInFirebase();
       }
     })
@@ -960,11 +955,9 @@ function initSync() {
 function setupFirebaseListeners() {
   if (!firebaseRef) return;
   
-  // Απλός listener για αλλαγές - όχι για αρχική φόρτωση
   firebaseRef.on('value', (snapshot) => {
     const data = snapshot.val();
     if (data && !isSyncing) {
-      // Μόνο ενημέρωση UI, όχι αντικατάσταση τοπικών δεδομένων
       updateUIFromSync(data);
     }
   }, (error) => {
@@ -973,12 +966,10 @@ function setupFirebaseListeners() {
 }
 
 function updateUIFromSync(data) {
-  // Ενημέρωση μόνο αν υπάρχουν σημαντικές αλλαγές
   const localHash = JSON.stringify(expenses).length + JSON.stringify(categories).length;
   const remoteHash = JSON.stringify(data.expenses || []).length + JSON.stringify(data.categories || []).length;
   
   if (Math.abs(localHash - remoteHash) > 100) {
-    // Συγχώνευση αντί αντικατάστασης
     if (data.categories && data.categories.length > categories.length) {
       categories = [...new Set([...categories, ...data.categories])];
     }
@@ -1006,7 +997,7 @@ function debouncedSync() {
   
   syncTimeout = setTimeout(() => {
     syncToFirebase();
-  }, 2000); // 2 δευτερόλεπτα debounce
+  }, 2000);
 }
 
 function syncToFirebase() {
@@ -1020,7 +1011,7 @@ function syncToFirebase() {
     creator: syncData.creator || currentUser,
     members: syncData.members || [currentUser],
     categories: categories,
-    expenses: expenses.slice(-100), // Μόνο τα τελευταία 100 έξοδα
+    expenses: expenses.slice(-100),
     recurringAmounts: recurringAmounts,
     income: income,
     bankBalances: bankBalances,
@@ -1689,6 +1680,7 @@ function updateCategoriesList() {
   }, 100);
 }
 
+// ==================== ΝΕΑ ΛΕΙΤΟΥΡΓΙΑ: ΠΡΟΣΘΗΚΗ ΚΑΤΗΓΟΡΙΑΣ ΜΕ ENTER ====================
 function addNewCategory() {
   const newCategoryInput = document.getElementById('newCategoryName');
   const categoryName = newCategoryInput.value.trim();
@@ -1711,6 +1703,11 @@ function addNewCategory() {
   updateRecurringInputs();
   updateUIFromData();
   showQuickMessage(`✅ Προστέθηκε η κατηγορία "${categoryName}"`, 'success');
+}
+
+// Συνάρτηση για να ελέγχουμε αν ο χρήστης είναι σε desktop
+function isDesktop() {
+  return window.innerWidth > 768; // Σε μεγαλύτερες οθόνες από tablet
 }
 
 function deleteCategory(index) {
@@ -1887,6 +1884,7 @@ window.onload = function() {
   
   initSync();
   
+  // Event listeners για το πεδίο προσθήκης εξόδων
   document.getElementById('amount').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -1915,7 +1913,24 @@ window.onload = function() {
     }
   });
   
-  // Αυτόματη αποθήκευση κάθε 60 δευτερόλεπτα (χαμηλότερη συχνότητα)
+  // ΝΕΟ: Event listener για το πεδίο νέας κατηγορίας
+  document.getElementById('newCategoryName').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      
+      // Αν είμαστε σε desktop, προσθέτουμε κατηγορία
+      if (isDesktop()) {
+        addNewCategory();
+        
+        // Αυτόματη εστίαση πίσω στο πεδίο για νέα κατηγορία
+        setTimeout(() => {
+          document.getElementById('newCategoryName').focus();
+        }, 100);
+      }
+    }
+  });
+  
+  // Αυτόματη αποθήκευση κάθε 60 δευτερόλεπτα
   setInterval(() => {
     if (currentBudget && !isSyncing) {
       syncToFirebase();
@@ -1923,6 +1938,17 @@ window.onload = function() {
   }, 60000);
   
   document.getElementById('amount').focus();
+  
+  // Προσθήκη μικρής βελτίωσης: εστίαση στο πεδίο νέας κατηγορίας όταν ανοίγει το tab 4
+  const tab4Button = document.querySelector('.tab:nth-child(4)');
+  tab4Button.addEventListener('click', function() {
+    setTimeout(() => {
+      const newCategoryInput = document.getElementById('newCategoryName');
+      if (newCategoryInput && isDesktop()) {
+        newCategoryInput.focus();
+      }
+    }, 300);
+  });
 };
 </script>
 </body>
