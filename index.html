@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BudgetBuddy — Έξοδα Σπιτιού</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>€</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>€</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>€</text></svg>">
 <style>
   body {
@@ -71,11 +71,11 @@
     overflow-x: auto;
     background: white;
     border-bottom: 2px solid #f0f0f0;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
   }
 
   .tabs-container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari */
+    display: none;
   }
 
   .tab {
@@ -174,7 +174,7 @@
     50% { opacity: 0.5; }
   }
 
-  /* ============ ΒΕΛΤΙΩΜΕΝΟ QUICK ADD FORM - TAB 1 ============ */
+  /* ============ ΒΕΛΤΙΩΜΕΝΟ QUICK ADD FORM ============ */
   .quick-add-form {
     background: #fff0f7;
     border-radius: 12px;
@@ -183,7 +183,6 @@
     box-shadow: 0 4px 12px rgba(233, 30, 99, 0.1);
   }
 
-  /* ΒΕΛΤΙΩΜΕΝΟ ΠΡΩΤΟ ROW - ΠΟΣΟ & ΚΟΥΜΠΙ */
   .first-row {
     display: flex;
     gap: 10px;
@@ -197,10 +196,9 @@
 
   .add-button-group {
     flex-shrink: 0;
-    width: 50px; /* Μικρό πλάτος για το κουμπί */
+    width: 50px;
   }
 
-  /* ΒΕΛΤΙΩΜΕΝΟ ΔΕΥΤΕΡΟ ROW - ΚΑΤΗΓΟΡΙΑ & ΗΜΕΡΟΜΗΝΙΑ */
   .second-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -208,7 +206,6 @@
     margin-bottom: 12px;
   }
 
-  /* ΒΕΛΤΙΩΜΕΝΟ ΤΡΙΤΟ ROW - ΣΗΜΕΙΩΣΗ */
   .note-row {
     margin-bottom: 0;
   }
@@ -282,7 +279,6 @@
     box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
   }
 
-  /* KΟΥΜΠΙ ΔΙΑΓΡΑΦΗΣ ΓΙΑ ΚΑΘΕ ΕΞΟΔΟ */
   .delete-expense-btn {
     background: #f44336;
     color: white;
@@ -300,7 +296,6 @@
     transform: scale(1.1);
   }
 
-  /* DRAG & DROP ΓΙΑ ΚΑΤΗΓΟΡΙΕΣ */
   .category-tag {
     display: inline-flex;
     align-items: center;
@@ -530,14 +525,13 @@
       padding: 12px;
     }
 
-    /* ΒΕΛΤΙΩΜΕΝΟ RESPONSIVE */
     .first-row {
-      flex-direction: row; /* Κρατάει την ίδια διάταξη και σε mobile */
+      flex-direction: row;
       gap: 8px;
     }
 
     .add-button-group {
-      width: 50px; /* Παραμένει μικρό */
+      width: 50px;
     }
 
     button.add {
@@ -609,11 +603,10 @@
     }
 
     button.add {
-      font-size: 20px; /* Μεγαλύτερο για σταυρό */
+      font-size: 20px;
     }
   }
 
-  /* ΕΙΔΙΚΗ ΚΛΑΣΗ ΓΙΑ ΚΕΝΗ ΛΙΣΤΑ */
   .empty-state {
     text-align: center;
     padding: 40px 20px;
@@ -666,7 +659,6 @@
   <!-- TAB 1: ΠΡΟΣΘΗΚΗ -->
   <div id="tab1" class="tab-content active">
     <div class="quick-add-form">
-      <!-- ΒΕΛΤΙΩΜΕΝΟ: ΠΟΣΟ & ΚΟΥΜΠΙ ΣΤΗΝ ΙΔΙΑ ΓΡΑΜΜΗ -->
       <div class="first-row">
         <div class="amount-group form-group">
           <label>💰 Ποσό (€)</label>
@@ -682,7 +674,6 @@
         </div>
       </div>
       
-      <!-- ΚΑΤΗΓΟΡΙΑ & ΗΜΕΡΟΜΗΝΙΑ -->
       <div class="second-row">
         <div class="form-group">
           <label>📂 Κατηγορία</label>
@@ -695,7 +686,6 @@
         </div>
       </div>
       
-      <!-- ΣΗΜΕΙΩΣΗ -->
       <div class="form-group note-row">
         <label>📝 Σημείωση (προαιρετικό)</label>
         <input type="text" id="note" placeholder="π.χ. ψώνια σούπερ μάρκετ" autocomplete="off">
@@ -704,9 +694,7 @@
 
     <div style="margin-top: 20px;">
       <h3 style="color: #e91e63; margin-bottom: 10px;">📋 Πρόσφατα έξοδα</h3>
-      <div class="recent-expenses-container" id="recentExpenses">
-        <!-- Θα εμφανίζονται εδώ τα πρόσφατα έξοδα -->
-      </div>
+      <div class="recent-expenses-container" id="recentExpenses"></div>
     </div>
   </div>
 
@@ -727,9 +715,7 @@
       </div>
     </div>
     
-    <div class="budget-cards" id="budgetCards">
-      <!-- Θα εμφανίζονται εδώ οι καρτέλες προϋπολογισμού -->
-    </div>
+    <div class="budget-cards" id="budgetCards"></div>
     
     <div style="margin-top: 30px; padding: 20px; background: linear-gradient(to right, #e8f5e9, #f1f8e9); border-radius: 10px;">
       <h3 style="margin-top: 0; color: #2e7d32;">💰 Τελικό Υπόλοιπο</h3>
@@ -788,7 +774,7 @@
       
       <div style="display: flex; gap: 10px; margin-bottom: 15px;">
         <input type="text" id="newCategoryName" placeholder="Όνομα νέας κατηγορίας" style="flex: 1;" autocomplete="off">
-        <button class="add" onclick="addNewCategory()" style="width: auto; padding: 12px 20px;">
+        <button class="add" onclick="addNewCategory()" id="addCategoryButton" style="width: auto; padding: 12px 20px;">
           <span>➕</span> Προσθήκη
         </button>
       </div>
@@ -850,91 +836,11 @@ let firebaseRef = null;
 let draggedCategory = null;
 let dragStartIndex = null;
 
-// ==================== TABS FUNCTIONALITY ====================
-function switchTab(tabNumber) {
-  // Απενεργοποίηση όλων των tabs
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.classList.remove('active');
-  });
-  
-  document.querySelectorAll('.tab-content').forEach(content => {
-    content.classList.remove('active');
-  });
-  
-  // Ενεργοποίηση επιλεγμένου tab
-  document.querySelector(`.tab:nth-child(${tabNumber})`).classList.add('active');
-  document.getElementById(`tab${tabNumber}`).classList.add('active');
-  
-  // Αν είναι το tab 2 (Υπόλοιπα), ανανέωσε τα δεδομένα
-  if (tabNumber === 2) {
-    updateBudgetOverview();
-  }
-  
-  // Αν είναι το tab 3 (Τράπεζες), φόρτωσε τις τιμές
-  if (tabNumber === 3) {
-    loadBankValues();
-  }
-  
-  // Αν είναι το tab 4 (Ρυθμίσεις), ανανέωσε τις κατηγορίες
-  if (tabNumber === 4) {
-    updateCategoriesList();
-    updateRecurringInputs();
-  }
-}
+// Μεταβλητή για debounce συγχρονισμού
+let syncTimeout = null;
+let isSyncing = false;
 
-// ==================== QUICK MESSAGES ====================
-function showQuickMessage(message, type = 'info') {
-  const msg = document.createElement('div');
-  msg.style.cssText = `
-    position: fixed;
-    top: 100px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: ${type === 'error' ? '#f44336' : type === 'success' ? '#4caf50' : '#333'};
-    color: white;
-    padding: 12px 24px;
-    border-radius: 25px;
-    z-index: 10000;
-    font-size: 14px;
-    animation: fadeInOut 3s ease-in-out;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  `;
-  msg.innerHTML = `
-    ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}
-    <span>${message}</span>
-  `;
-  
-  document.body.appendChild(msg);
-  
-  setTimeout(() => {
-    msg.style.animation = 'fadeOut 0.5s ease-in-out';
-    setTimeout(() => msg.remove(), 500);
-  }, 3000);
-}
-
-// Δημιουργία CSS animations αν δεν υπάρχουν
-if (!document.getElementById('msg-styles')) {
-  const style = document.createElement('style');
-  style.id = 'msg-styles';
-  style.textContent = `
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-      10% { opacity: 1; transform: translateX(-50%) translateY(0); }
-      90% { opacity: 1; transform: translateX(-50%) translateY(0); }
-      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-    }
-    @keyframes fadeOut {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
-  `;
-  document.head.appendChild(style);
-}
-
-// ==================== ΣΥΓΧΡΟΝΙΣΜΟΣ ====================
+// ==================== ΒΕΛΤΙΩΜΕΝΟΣ ΣΥΓΧΡΟΝΙΣΜΟΣ ====================
 function updateSyncUI(status, data = null) {
   const mainDot = document.getElementById('mainSyncDot');
   const buttonText = document.getElementById('syncButtonText');
@@ -977,17 +883,23 @@ function initSync() {
     return;
   }
   
-  if (!firebase.apps.length) {
-    const firebaseConfig = {
-      apiKey: "AIzaSyBaItM0-eOAwU6snAxfMU_bcp9xW0UfYzQ",
-      authDomain: "travelcosts-48d64.firebaseapp.com",
-      databaseURL: "https://travelcosts-48d64-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "travelcosts-48d64",
-      storageBucket: "travelcosts-48d64.firebasestorage.app",
-      messagingSenderId: "792639383940",
-      appId: "1:792639383940:web:ed991cc8426603015bd5d1"
-    };
-    firebase.initializeApp(firebaseConfig);
+  if (firebase.apps.length === 0) {
+    try {
+      const firebaseConfig = {
+        apiKey: "AIzaSyBaItM0-eOAwU6snAxfMU_bcp9xW0UfYzQ",
+        authDomain: "travelcosts-48d64.firebaseapp.com",
+        databaseURL: "https://travelcosts-48d64-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "travelcosts-48d64",
+        storageBucket: "travelcosts-48d64.firebasestorage.app",
+        messagingSenderId: "792639383940",
+        appId: "1:792639383940:web:ed991cc8426603015bd5d1"
+      };
+      firebase.initializeApp(firebaseConfig);
+    } catch (error) {
+      console.warn("Firebase init error:", error);
+      updateSyncUI('offline');
+      return;
+    }
   }
   
   const database = firebase.database();
@@ -995,46 +907,130 @@ function initSync() {
   
   updateSyncUI('connecting');
   
+  firebaseRef.once('value')
+    .then((snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        if (data.categories && data.categories.length > 0 && categories.length === 0) {
+          categories = data.categories;
+        }
+        
+        if (data.expenses && data.expenses.length > 0 && expenses.length === 0) {
+          expenses = data.expenses;
+        }
+        
+        if (data.recurringAmounts && Object.keys(recurringAmounts).length === 0) {
+          recurringAmounts = data.recurringAmounts;
+        }
+        
+        if (data.income && income === 2000) {
+          income = data.income;
+        }
+        
+        if (data.bankBalances && Object.keys(bankBalances).length === 4) {
+          bankBalances = data.bankBalances;
+        }
+        
+        syncData.budgetName = data.name || syncData.budgetName;
+        syncData.creator = data.creator || syncData.creator;
+        syncData.members = data.members || [currentUser];
+        
+        localStorage.setItem('budgetbuddy_sync', JSON.stringify(syncData));
+        saveAllData();
+        updateUIFromData();
+        updateSyncUI('online', data);
+        
+        setupFirebaseListeners();
+        
+      } else {
+        createNewBudgetInFirebase();
+      }
+    })
+    .catch((error) => {
+      console.warn("Firebase connection error:", error);
+      updateSyncUI('offline');
+    });
+}
+
+function setupFirebaseListeners() {
+  if (!firebaseRef) return;
+  
   firebaseRef.on('value', (snapshot) => {
     const data = snapshot.val();
-    if (data) {
-      syncData.budgetName = data.name;
-      syncData.creator = data.creator;
-      syncData.members = data.members || [currentUser];
-      
-      localStorage.setItem('budgetbuddy_sync', JSON.stringify(syncData));
-      
-      if (data.categories && data.categories.length > 0) {
-        categories = data.categories;
-      }
-      if (data.expenses && data.expenses.length > 0) {
-        expenses = data.expenses;
-      }
-      if (data.recurringAmounts) {
-        recurringAmounts = data.recurringAmounts;
-      }
-      if (data.income) {
-        income = data.income;
-      }
-      if (data.bankBalances) {
-        bankBalances = data.bankBalances;
-      }
-      
-      saveAllData();
-      updateUIFromData();
-      updateSyncUI('online', data);
-      
-    } else {
-      createNewBudgetInFirebase();
+    if (data && !isSyncing) {
+      updateUIFromSync(data);
     }
   }, (error) => {
-    console.error("Firebase error:", error);
-    updateSyncUI('offline');
+    console.warn("Firebase listener error:", error);
   });
 }
 
+function updateUIFromSync(data) {
+  const localHash = JSON.stringify(expenses).length + JSON.stringify(categories).length;
+  const remoteHash = JSON.stringify(data.expenses || []).length + JSON.stringify(data.categories || []).length;
+  
+  if (Math.abs(localHash - remoteHash) > 100) {
+    if (data.categories && data.categories.length > categories.length) {
+      categories = [...new Set([...categories, ...data.categories])];
+    }
+    
+    if (data.expenses) {
+      const newExpenses = data.expenses.filter(remoteExp => 
+        !expenses.some(localExp => localExp.id === remoteExp.id)
+      );
+      if (newExpenses.length > 0) {
+        expenses = [...expenses, ...newExpenses];
+      }
+    }
+    
+    saveAllData();
+    updateUIFromData();
+  }
+}
+
+function debouncedSync() {
+  if (!currentBudget || isSyncing) return;
+  
+  if (syncTimeout) {
+    clearTimeout(syncTimeout);
+  }
+  
+  syncTimeout = setTimeout(() => {
+    syncToFirebase();
+  }, 2000);
+}
+
+function syncToFirebase() {
+  if (!currentBudget || !firebaseRef || isSyncing) return;
+  
+  isSyncing = true;
+  
+  const budgetData = {
+    code: currentBudget,
+    name: syncData.budgetName || `Προϋπολογισμός ${currentBudget}`,
+    creator: syncData.creator || currentUser,
+    members: syncData.members || [currentUser],
+    categories: categories,
+    expenses: expenses.slice(-100),
+    recurringAmounts: recurringAmounts,
+    income: income,
+    bankBalances: bankBalances,
+    lastUpdated: Date.now()
+  };
+  
+  firebaseRef.set(budgetData)
+    .then(() => {
+      isSyncing = false;
+    })
+    .catch((error) => {
+      console.warn("Sync error:", error);
+      isSyncing = false;
+      updateSyncUI('offline');
+    });
+}
+
 function createNewBudgetInFirebase() {
-  if (!currentBudget) return;
+  if (!currentBudget || !firebaseRef) return;
   
   const budgetName = syncData.budgetName || `Προϋπολογισμός ${currentBudget}`;
   
@@ -1055,30 +1051,85 @@ function createNewBudgetInFirebase() {
   firebaseRef.set(newBudget)
     .then(() => {
       updateSyncUI('online', newBudget);
+      setupFirebaseListeners();
     })
     .catch(error => {
-      console.error("Firebase create error:", error);
+      console.warn("Firebase create error:", error);
       updateSyncUI('offline');
     });
 }
 
-function syncToFirebase() {
-  if (!currentBudget || !firebaseRef) return;
+// ==================== ΒΑΣΙΚΕΣ ΛΕΙΤΟΥΡΓΙΕΣ ====================
+function switchTab(tabNumber) {
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
   
-  const budgetData = {
-    code: currentBudget,
-    name: syncData.budgetName || `Προϋπολογισμός ${currentBudget}`,
-    creator: syncData.creator || currentUser,
-    members: syncData.members || [currentUser],
-    categories: categories,
-    expenses: expenses,
-    recurringAmounts: recurringAmounts,
-    income: income,
-    bankBalances: bankBalances,
-    lastUpdated: Date.now()
-  };
+  document.querySelector(`.tab:nth-child(${tabNumber})`).classList.add('active');
+  document.getElementById(`tab${tabNumber}`).classList.add('active');
   
-  firebaseRef.set(budgetData);
+  if (tabNumber === 2) {
+    updateBudgetOverview();
+  }
+  
+  if (tabNumber === 3) {
+    loadBankValues();
+  }
+  
+  if (tabNumber === 4) {
+    updateCategoriesList();
+    updateRecurringInputs();
+  }
+}
+
+function showQuickMessage(message, type = 'info') {
+  const msg = document.createElement('div');
+  msg.style.cssText = `
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: ${type === 'error' ? '#f44336' : type === 'success' ? '#4caf50' : '#333'};
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    z-index: 10000;
+    font-size: 14px;
+    animation: fadeInOut 3s ease-in-out;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  `;
+  msg.innerHTML = `
+    ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}
+    <span>${message}</span>
+  `;
+  
+  document.body.appendChild(msg);
+  
+  setTimeout(() => {
+    msg.style.animation = 'fadeOut 0.5s ease-in-out';
+    setTimeout(() => msg.remove(), 500);
+  }, 3000);
+}
+
+// Δημιουργία CSS animations
+if (!document.getElementById('msg-styles')) {
+  const style = document.createElement('style');
+  style.id = 'msg-styles';
+  style.textContent = `
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
 }
 
 // ==================== MODAL ΣΥΓΧΡΟΝΙΣΜΟΥ ====================
@@ -1280,6 +1331,7 @@ function disconnectSync() {
   if (confirm('Θέλετε να αποσυνδεθείτε από τον συγχρονισμό;\nΤα τοπικά δεδομένα θα παραμείνουν.')) {
     if (firebaseRef) {
       firebaseRef.off();
+      firebaseRef = null;
     }
     
     currentBudget = null;
@@ -1306,21 +1358,8 @@ function setupDragAndDrop() {
   const categoriesList = document.getElementById('categoriesList');
   const categoryTags = document.querySelectorAll('.category-tag');
   
-  // Εκκαθάριση προηγούμενων event listeners
   categoryTags.forEach(tag => {
-    tag.removeEventListener('dragstart', handleDragStart);
-    tag.removeEventListener('dragend', handleDragEnd);
-  });
-  
-  categoriesList.removeEventListener('dragover', handleDragOver);
-  categoriesList.removeEventListener('dragenter', handleDragEnter);
-  categoriesList.removeEventListener('dragleave', handleDragLeave);
-  categoriesList.removeEventListener('drop', handleDrop);
-  
-  // Προσθήκη νέων event listeners
-  categoryTags.forEach((tag, index) => {
     tag.setAttribute('draggable', 'true');
-    tag.setAttribute('data-index', index);
     
     tag.addEventListener('dragstart', handleDragStart);
     tag.addEventListener('dragend', handleDragEnd);
@@ -1337,11 +1376,9 @@ function handleDragStart(e) {
   dragStartIndex = parseInt(this.getAttribute('data-index'));
   this.classList.add('dragging');
   
-  // Ρυθμίστε την εικόνα drag για να λειτουργεί καλύτερα
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', this.textContent);
   
-  // Προσθήκη μικρής καθυστέρησης για να μπορεί να γίνει drop
   setTimeout(() => {
     this.style.display = 'none';
   }, 0);
@@ -1351,7 +1388,6 @@ function handleDragEnd(e) {
   this.classList.remove('dragging');
   this.style.display = 'flex';
   
-  // Επαναφορά του στυλ της λίστας κατηγοριών
   const categoriesList = document.getElementById('categoriesList');
   categoriesList.classList.remove('drag-over');
   
@@ -1373,7 +1409,6 @@ function handleDragEnter(e) {
 
 function handleDragLeave(e) {
   const categoriesList = document.getElementById('categoriesList');
-  // Ελέγξτε αν το ποντίκι βγαίνει από τη λίστα
   if (!categoriesList.contains(e.relatedTarget)) {
     categoriesList.classList.remove('drag-over');
   }
@@ -1388,18 +1423,15 @@ function handleDrop(e) {
   
   if (!draggedCategory) return;
   
-  // Βρείτε το στοιχείο πάνω στο οποίο γίνεται το drop
   const dropTarget = e.target.closest('.category-tag');
   
   if (dropTarget && dropTarget !== draggedCategory) {
     const dropIndex = parseInt(dropTarget.getAttribute('data-index'));
     
-    // Αναδιοργάνωση του πίνακα κατηγοριών
     const categoryToMove = categories[dragStartIndex];
-    categories.splice(dragStartIndex, 1); // Αφαίρεση από την παλιά θέση
-    categories.splice(dropIndex, 0, categoryToMove); // Εισαγωγή στη νέα θέση
+    categories.splice(dragStartIndex, 1);
+    categories.splice(dropIndex, 0, categoryToMove);
     
-    // Αναδιοργάνωση του recurringAmounts
     const newRecurringAmounts = {};
     categories.forEach(category => {
       if (recurringAmounts[category] !== undefined) {
@@ -1410,8 +1442,8 @@ function handleDrop(e) {
     });
     recurringAmounts = newRecurringAmounts;
     
-    // Αποθήκευση και ανανέωση
     saveAllData();
+    debouncedSync();
     updateCategoriesList();
     updateRecurringInputs();
     updateUIFromData();
@@ -1443,13 +1475,10 @@ function saveAllData() {
   localStorage.setItem('income', income);
   localStorage.setItem('bankBalances', JSON.stringify(bankBalances));
   
-  if (currentBudget) {
-    syncToFirebase();
-  }
+  debouncedSync();
 }
 
 function updateUIFromData() {
-  // Ενημέρωση κατηγοριών στο dropdown
   const categorySelect = document.getElementById('category');
   if (categories.length > 0) {
     categorySelect.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -1457,43 +1486,31 @@ function updateUIFromData() {
     categorySelect.innerHTML = '<option value="">Προσθέστε πρώτα κατηγορίες</option>';
   }
   
-  // Ενημέρωση πρόσφατων εξόδων
   updateRecentExpenses();
-  
-  // Ενημέρωση προϋπολογισμών
   updateBudgetOverview();
 }
 
-// ==================== ΝΕΑ ΛΕΙΤΟΥΡΓΙΑ: ΔΙΑΓΡΑΦΗ ΕΞΟΔΟΥ ====================
 function deleteExpense(expenseId) {
   if (!confirm('Θέλετε σίγουρα να διαγράψετε αυτό το έξοδο;')) {
     return;
   }
   
-  // Βρες και αφαίρεσε το έξοδο από τον πίνακα
   const expenseIndex = expenses.findIndex(exp => exp.id === expenseId);
   if (expenseIndex !== -1) {
-    // Αποθήκευσε πληροφορίες για το μήνυμα επιβεβαίωσης
     const deletedExpense = expenses[expenseIndex];
-    
-    // Αφαίρεσε το έξοδο
     expenses.splice(expenseIndex, 1);
     
-    // Αποθήκευσε τα νέα δεδομένα
     saveAllData();
-    
-    // Ενημέρωσε την εμφάνιση
     updateRecentExpenses();
     updateBudgetOverview();
     
-    // Εμφάνισε μήνυμα επιβεβαίωσης
     showQuickMessage(`🗑️ Διαγράφηκε έξοδο ${deletedExpense.category} - ${deletedExpense.amount.toFixed(2)}€`, 'success');
   }
 }
 
 function updateRecentExpenses() {
   const recentExpensesDiv = document.getElementById('recentExpenses');
-  const recentExpenses = expenses.slice(-10).reverse(); // 10 πιο πρόσφατα
+  const recentExpenses = expenses.slice(-10).reverse();
   
   if (recentExpenses.length === 0) {
     recentExpensesDiv.innerHTML = `
@@ -1592,7 +1609,6 @@ function updateBudgetOverview() {
   
   budgetCardsDiv.innerHTML = html;
   
-  // Ενημέρωση των συνολικών στοιχείων
   document.getElementById('displayIncome').textContent = income.toFixed(2) + ' €';
   document.getElementById('displaySpent').textContent = totalSpent.toFixed(2) + ' €';
   
@@ -1613,13 +1629,11 @@ function updateBudgetOverview() {
 }
 
 function loadBankValues() {
-  // Φόρτωση τιμών από το bankBalances
   document.getElementById('alphaBank').value = bankBalances.alphaBank > 0 ? bankBalances.alphaBank : '';
   document.getElementById('nationalBank').value = bankBalances.nationalBank > 0 ? bankBalances.nationalBank : '';
   document.getElementById('cash').value = bankBalances.cash > 0 ? bankBalances.cash : '';
   document.getElementById('expectedIncome').value = bankBalances.expectedIncome > 0 ? bankBalances.expectedIncome : '';
   
-  // Υπολογισμός συνολικών διαθέσιμων χρημάτων
   const currentMoney = (bankBalances.alphaBank || 0) + (bankBalances.nationalBank || 0) + (bankBalances.cash || 0);
   const futureMoney = bankBalances.expectedIncome || 0;
   const totalMoney = currentMoney + futureMoney;
@@ -1637,7 +1651,7 @@ function saveBankBalances() {
   
   saveAllData();
   showQuickMessage('💰 Τα τραπεζικά υπόλοιπα αποθηκεύτηκαν!', 'success');
-  loadBankValues(); // Ενημέρωση της οθόνης
+  loadBankValues();
 }
 
 function updateCategoriesList() {
@@ -1661,12 +1675,12 @@ function updateCategoriesList() {
   
   categoriesListDiv.innerHTML = html;
   
-  // Ρύθμιση drag & drop μετά την ενημέρωση του DOM
   setTimeout(() => {
     setupDragAndDrop();
   }, 100);
 }
 
+// ==================== ΝΕΑ ΛΕΙΤΟΥΡΓΙΑ: ΠΡΟΣΘΗΚΗ ΚΑΤΗΓΟΡΙΑΣ ΜΕ ENTER ====================
 function addNewCategory() {
   const newCategoryInput = document.getElementById('newCategoryName');
   const categoryName = newCategoryInput.value.trim();
@@ -1689,6 +1703,11 @@ function addNewCategory() {
   updateRecurringInputs();
   updateUIFromData();
   showQuickMessage(`✅ Προστέθηκε η κατηγορία "${categoryName}"`, 'success');
+}
+
+// Συνάρτηση για να ελέγχουμε αν ο χρήστης είναι σε desktop
+function isDesktop() {
+  return window.innerWidth > 768; // Σε μεγαλύτερες οθόνες από tablet
 }
 
 function deleteCategory(index) {
@@ -1813,13 +1832,11 @@ function addExpense() {
   
   expenses.push(newExpense);
   
-  // Καθαρισμός μόνο του ποσού και της σημείωσης
   document.getElementById('amount').value = '';
   document.getElementById('note').value = '';
   
   saveAllData();
   
-  // Εμφάνιση επιβεβαίωσης στο κουμπί
   const addButton = document.getElementById('addExpenseButton');
   const originalHTML = addButton.innerHTML;
   const originalBackground = addButton.style.background;
@@ -1834,17 +1851,14 @@ function addExpense() {
   
   showQuickMessage(`✅ Προστέθηκε έξοδο ${category} - ${amount.toFixed(2)}€`, 'success');
   
-  // Ενημέρωση της εμφάνισης
   updateRecentExpenses();
   updateBudgetOverview();
   
-  // Επιστροφή στην κατηγορία
   document.getElementById('amount').focus();
 }
 
 // ==================== INITIALIZATION ====================
 window.onload = function() {
-  // Δημιουργία αστεριών
   const starsContainer = document.getElementById('stars');
   const starColors = ['#fff', '#ffd1e8', '#ffb6c1', '#ffc0cb'];
   
@@ -1859,21 +1873,18 @@ window.onload = function() {
     starsContainer.appendChild(star);
   }
   
-  // Ορισμός ημερομηνιών
   const today = new Date().toISOString().slice(0,10);
   document.getElementById('date').value = today;
   
-  // Αρχικοποίηση δεδομένων
   cleanupData();
   updateUIFromData();
   updateCategoriesList();
   updateRecurringInputs();
   loadBankValues();
   
-  // Έναρξη συγχρονισμού
   initSync();
   
-  // Setup για Enter key - ΕΥΚΟΛΗ ΧΡΗΣΗ ΣΕ ΚΙΝΗΤΟ
+  // Event listeners για το πεδίο προσθήκης εξόδων
   document.getElementById('amount').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -1902,15 +1913,42 @@ window.onload = function() {
     }
   });
   
-  // Αυτόματη αποθήκευση κάθε 30 δευτερόλεπτα
+  // ΝΕΟ: Event listener για το πεδίο νέας κατηγορίας
+  document.getElementById('newCategoryName').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      
+      // Αν είμαστε σε desktop, προσθέτουμε κατηγορία
+      if (isDesktop()) {
+        addNewCategory();
+        
+        // Αυτόματη εστίαση πίσω στο πεδίο για νέα κατηγορία
+        setTimeout(() => {
+          document.getElementById('newCategoryName').focus();
+        }, 100);
+      }
+    }
+  });
+  
+  // Αυτόματη αποθήκευση κάθε 60 δευτερόλεπτα
   setInterval(() => {
-    if (currentBudget) {
+    if (currentBudget && !isSyncing) {
       syncToFirebase();
     }
-  }, 30000);
+  }, 60000);
   
-  // Αυτόματη εστίαση στο πεδίο ποσού όταν ανοίγει το tab 1
   document.getElementById('amount').focus();
+  
+  // Προσθήκη μικρής βελτίωσης: εστίαση στο πεδίο νέας κατηγορίας όταν ανοίγει το tab 4
+  const tab4Button = document.querySelector('.tab:nth-child(4)');
+  tab4Button.addEventListener('click', function() {
+    setTimeout(() => {
+      const newCategoryInput = document.getElementById('newCategoryName');
+      if (newCategoryInput && isDesktop()) {
+        newCategoryInput.focus();
+      }
+    }, 300);
+  });
 };
 </script>
 </body>
