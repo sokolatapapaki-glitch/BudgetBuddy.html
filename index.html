@@ -1,3 +1,5 @@
+<!-- ΑΝΤΙΓΡΑΦΗ ΟΛΟΥ ΤΟΥ ΚΩΔΙΚΑ ΜΕ ΤΙΣ ΑΛΛΑΓΕΣ -->
+
 <!DOCTYPE html>
 <html lang="el">
 <head>
@@ -174,7 +176,7 @@
     50% { opacity: 0.5; }
   }
 
-  /* ============ ΒΕΛΤΙΩΜΕΝΟ QUICK ADD FORM ============ */
+  /* ============ QUICK ADD FORM ============ */
   .quick-add-form {
     background: #fff0f7;
     border-radius: 12px;
@@ -504,7 +506,7 @@
     font-size: 16px;
   }
 
-  /* ΝΕΑ: ΜΗΝΑΣ SELECTOR */
+  /* ΜΗΝΑΣ SELECTOR */
   .month-selector {
     display: flex;
     align-items: center;
@@ -535,73 +537,68 @@
     transform: translateY(-2px);
   }
 
-  /* ΝΕΟ: Πλαίσιο εσόδων */
-  .income-editor {
-    background: #e8f5e9;
-    padding: 15px;
+  /* ΝΕΟ: ΟΙ 3 ΚΑΙΝΟΥΡΓΙΕΣ ΚΑΡΤΕΣ ΣΤΗΝ ΚΑΡΤΕΛΑ 1 */
+  .financial-overview {
+    background: linear-gradient(to bottom, #f8f9ff, #f5f7ff);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0ff;
+  }
+
+  .financial-card {
+    background: white;
     border-radius: 10px;
+    padding: 15px;
     margin-bottom: 15px;
+    border-left: 4px solid;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .financial-card:last-child {
+    margin-bottom: 0;
+  }
+
+  .financial-card.income {
+    border-left-color: #4caf50;
+  }
+
+  .financial-card.pending {
+    border-left-color: #ff9800;
+  }
+
+  .financial-card.available {
+    border-left-color: #2196f3;
+  }
+
+  .financial-card h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 15px;
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 8px;
   }
 
-  .income-editor label {
+  .financial-amount {
+    font-size: 24px;
     font-weight: bold;
-    color: #2e7d32;
-    min-width: 80px;
+    margin-bottom: 5px;
   }
 
-  .income-editor input {
-    flex: 1;
-    padding: 10px;
-    border-radius: 8px;
-    border: 2px solid #4caf50;
-    font-size: 16px;
-    text-align: center;
-  }
-
-  .income-editor button {
-    background: #4caf50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-
-  .income-editor button:hover {
-    background: #388e3c;
-  }
-
-  /* ΝΕΑ: Πεδίο διαθέσιμων χρημάτων */
-  .available-money-display {
-    background: linear-gradient(to right, #e3f2fd, #e8f5e9);
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-
-  .available-money-display h4 {
-    margin: 0 0 10px 0;
-    color: #1976d2;
-  }
-
-  .available-money-display .amount {
-    font-size: 28px;
-    font-weight: bold;
-    color: #1976d2;
-    margin-bottom: 10px;
-  }
-
-  .budget-total {
-    font-size: 14px;
+  .financial-details {
+    font-size: 12px;
     color: #666;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #ddd;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+  }
+
+  .financial-details div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
   }
 
   /* RESPONSIVE */
@@ -677,8 +674,12 @@
       flex-wrap: wrap;
     }
     
-    .income-editor {
-      flex-wrap: wrap;
+    .financial-overview {
+      padding: 15px;
+    }
+    
+    .financial-amount {
+      font-size: 20px;
     }
   }
 
@@ -771,7 +772,7 @@
   
   <!-- TAB 1: ΠΡΟΣΘΗΚΗ -->
   <div id="tab1" class="tab-content active">
-    <!-- ΝΕΟ: ΜΗΝΑΣ SELECTOR -->
+    <!-- ΜΗΝΑΣ SELECTOR -->
     <div class="month-selector">
       <span style="font-weight: bold; color: #e91e63;">📅 Τρέχων μήνας:</span>
       <select id="monthSelect"></select>
@@ -813,12 +814,40 @@
       </div>
     </div>
 
-    <!-- ΝΕΟ: ΔΙΑΘΕΣΙΜΑ ΧΡΗΜΑΤΑ -->
-    <div class="available-money-display">
-      <h4>💰 Διαθέσιμα για προϋπολογισμό</h4>
-      <div class="amount" id="availableForBudget">0.00 €</div>
-      <div class="budget-total">
-        Σύνολο προϋπολογισμών: <span id="totalBudgetAmount">0.00 €</span>
+    <!-- ΝΕΑ: ΟΙ 3 ΚΑΡΤΕΣ -->
+    <div class="financial-overview">
+      <h3 style="margin-top: 0; color: #333; text-align: center; margin-bottom: 15px;">💰 ΣΥΝΟΛΙΚΗ ΟΙΚΟΝΟΜΙΚΗ ΕΙΚΟΝΑ</h3>
+      
+      <!-- ΚΑΡΤΑ 1: ΕΣΟΔΑ -->
+      <div class="financial-card income">
+        <h4>💰 ΕΣΟΔΑ</h4>
+        <div class="financial-amount" id="totalIncomeDisplay">0.00 €</div>
+        <div class="financial-details" id="incomeDetails">
+          <div><span>Αλφα Τράπεζα:</span> <span id="alphaAmount">0.00 €</span></div>
+          <div><span>Εθνική Τράπεζα:</span> <span id="nationalAmount">0.00 €</span></div>
+          <div><span>Μετρητά:</span> <span id="cashAmount">0.00 €</span></div>
+          <div><span>Θα πάρω ακόμα:</span> <span id="expectedAmount">0.00 €</span></div>
+        </div>
+      </div>
+      
+      <!-- ΚΑΡΤΑ 2: ΥΠΟΛΟΙΠΟ ΠΡΟΣ ΠΛΗΡΩΜΗ -->
+      <div class="financial-card pending">
+        <h4>📋 ΥΠΟΛΟΙΠΟ ΠΡΟΣ ΠΛΗΡΩΜΗ</h4>
+        <div class="financial-amount" id="pendingPaymentDisplay">0.00 €</div>
+        <div class="financial-details">
+          <div><span>Σύνολο Προϋπολογισμών:</span> <span id="totalBudgetsAmount">0.00 €</span></div>
+          <div><span>Ήδη Πληρωμένα:</span> <span id="alreadyPaidAmount">0.00 €</span></div>
+        </div>
+      </div>
+      
+      <!-- ΚΑΡΤΑ 3: ΕΣΟΔΑ - ΕΞΟΔΑ -->
+      <div class="financial-card available">
+        <h4>✅ ΕΣΟΔΑ - ΕΞΟΔΑ</h4>
+        <div class="financial-amount" id="availableAfterExpensesDisplay">0.00 €</div>
+        <div class="financial-details">
+          <div><span>Συνολικά Έσοδα:</span> <span id="totalIncomeForCalc">0.00 €</span></div>
+          <div><span>Συνολικά Έξοδα:</span> <span id="totalExpensesAmount">0.00 €</span></div>
+        </div>
       </div>
     </div>
 
@@ -830,39 +859,9 @@
 
   <!-- TAB 2: ΥΠΟΛΟΙΠΑ -->
   <div id="tab2" class="tab-content">
-    <!-- ΝΕΟ: EDITOR ΕΣΟΔΩΝ -->
-    <div class="income-editor">
-      <label>💰 Έσοδα:</label>
-      <input type="number" id="incomeInput" step="0.01" placeholder="Εισάγετε μηνιαία έσοδα">
-      <button onclick="updateIncome()">💾 Αποθήκευση</button>
-    </div>
-
     <h2 style="color: #e91e63; margin-top: 0;">📊 Υπόλοιπα ανά Κατηγορία</h2>
     
-    <div style="background: #f0f8ff; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
-        <div style="text-align: center;">
-          <div style="font-size: 12px; color: #666;">Εισόδημα</div>
-          <div style="font-size: 24px; font-weight: bold; color: #4caf50;" id="displayIncome">0 €</div>
-        </div>
-        <div style="text-align: center;">
-          <div style="font-size: 12px; color: #666;">Ξοδεύτηκαν</div>
-          <div style="font-size: 24px; font-weight: bold; color: #e91e63;" id="displaySpent">0 €</div>
-        </div>
-      </div>
-    </div>
-    
     <div class="budget-cards" id="budgetCards"></div>
-    
-    <div style="margin-top: 30px; padding: 20px; background: linear-gradient(to right, #e8f5e9, #f1f8e9); border-radius: 10px;">
-      <h3 style="margin-top: 0; color: #2e7d32;">💰 Τελικό Υπόλοιπο (Νέα Λογική)</h3>
-      <div style="text-align: center; padding: 20px;">
-        <div style="font-size: 32px; font-weight: bold; color: #e91e63;" id="finalBalanceDisplay">0 €</div>
-        <div style="color: #666; font-size: 14px;" id="finalBalanceExplanation">
-          (Διαθέσιμα Χρήματα - Ξοδεύτηκαν)
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- TAB 3: ΤΡΑΠΕΖΕΣ -->
@@ -894,13 +893,6 @@
     <button class="add" onclick="saveBankBalances()" style="margin-top: 20px; width: 100%;">
       <span>💾</span> Αποθήκευση Υπολοίπων
     </button>
-    
-    <div style="margin-top: 30px; padding: 20px; background: #f0f8ff; border-radius: 10px;">
-      <h3 style="margin-top: 0; color: #2196f3;">📊 Σύνολο Διαθέσιμων Χρημάτων</h3>
-      <div style="text-align: center; padding: 15px;">
-        <div style="font-size: 28px; font-weight: bold; color: #2196f3;" id="totalAvailableMoney">0 €</div>
-      </div>
-    </div>
   </div>
 
   <!-- TAB 4: ΡΥΘΜΙΣΕΙΣ -->
@@ -957,7 +949,6 @@
 let categories = JSON.parse(localStorage.getItem('cats') || '[]');
 let expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
 let recurringAmounts = JSON.parse(localStorage.getItem('recurringAmounts') || '{}');
-let income = parseFloat(localStorage.getItem('income') || '2000');
 
 let bankBalances = JSON.parse(localStorage.getItem('bankBalances') || JSON.stringify({
   alphaBank: 0,
@@ -971,14 +962,11 @@ let currentUser = syncData.userName || "Οικογένεια";
 let currentBudget = syncData.budgetCode || null;
 let firebaseRef = null;
 
-// ΝΕΕΣ ΜΕΤΑΒΛΗΤΕΣ
-let currentMonth = localStorage.getItem('currentMonth') || new Date().toISOString().slice(0,7); // YYYY-MM
+let currentMonth = localStorage.getItem('currentMonth') || new Date().toISOString().slice(0,7);
 
-// Μεταβλητές για drag & drop
 let draggedCategory = null;
 let dragStartIndex = null;
 
-// Μεταβλητή για debounce συγχρονισμού
 let syncTimeout = null;
 let isSyncing = false;
 
@@ -1063,10 +1051,6 @@ function initSync() {
         
         if (data.recurringAmounts && Object.keys(recurringAmounts).length === 0) {
           recurringAmounts = data.recurringAmounts;
-        }
-        
-        if (data.income && income === 2000) {
-          income = data.income;
         }
         
         if (data.bankBalances && Object.keys(bankBalances).length === 4) {
@@ -1155,7 +1139,6 @@ function syncToFirebase() {
     categories: categories,
     expenses: expenses.slice(-100),
     recurringAmounts: recurringAmounts,
-    income: income,
     bankBalances: bankBalances,
     lastUpdated: Date.now()
   };
@@ -1185,7 +1168,6 @@ function createNewBudgetInFirebase() {
     categories: categories.length > 0 ? categories : ['Σούπερ Μάρκετ', 'Νοίκι', 'Ηλεκτρικό', 'Νερό', 'Τηλέφωνα', 'Καύσιμα', 'Ψυχαγωγία'],
     expenses: expenses,
     recurringAmounts: recurringAmounts,
-    income: income,
     bankBalances: bankBalances,
     lastUpdated: Date.now()
   };
@@ -1209,7 +1191,6 @@ function initMonthSelector() {
   const now = new Date();
   let html = '';
   
-  // Δημιουργία 12 μηνών (6 πριν, τρέχων, 5 μετά)
   for (let i = -6; i <= 5; i++) {
     const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
     const year = date.getFullYear();
@@ -1223,7 +1204,6 @@ function initMonthSelector() {
   
   monthSelect.innerHTML = html;
   
-  // Event listener για αλλαγή μήνα
   monthSelect.addEventListener('change', function() {
     const selectedMonth = this.value;
     if (selectedMonth !== currentMonth) {
@@ -1231,13 +1211,12 @@ function initMonthSelector() {
         currentMonth = selectedMonth;
         localStorage.setItem('currentMonth', currentMonth);
         
-        // Ενημέρωση UI
         updateRecentExpenses();
         updateBudgetOverview();
+        updateFinancialOverview();
         
         showQuickMessage(`📅 Αλλαγή σε μήνα: ${selectedMonth}`, 'success');
       } else {
-        // Επαναφορά στην προηγούμενη τιμή
         this.value = currentMonth;
       }
     }
@@ -1246,14 +1225,13 @@ function initMonthSelector() {
 
 function resetCurrentMonth() {
   if (confirm(`Θέλετε να διαγράψετε όλα τα έξοδα για τον μήνα ${currentMonth};\n\n⚠️ Η ενέργεια αυτή ΔΕΝ ΕΙΝΑΙ ΑΝΑΣΤΡΕΠΤΗ!\nΟι προϋπολογισμοί και οι κατηγορίες παραμένουν.`)) {
-    // Διαγραφή έξοδων μόνο για τον τρέχον μήνα
     const expensesToKeep = expenses.filter(expense => !expense.date.startsWith(currentMonth));
     expenses = expensesToKeep;
     
     saveAllData();
     updateRecentExpenses();
     updateBudgetOverview();
-    updateAvailableMoney();
+    updateFinancialOverview();
     showQuickMessage(`🧹 Εκκαθάριση μήνα ${currentMonth} ολοκληρώθηκε!`, 'success');
   }
 }
@@ -1270,7 +1248,6 @@ function createNewMonth() {
     currentMonth = monthKey;
     localStorage.setItem('currentMonth', currentMonth);
     
-    // Ενημέρωση selector
     const monthSelect = document.getElementById('monthSelect');
     const optionExists = Array.from(monthSelect.options).some(opt => opt.value === monthKey);
     
@@ -1281,184 +1258,69 @@ function createNewMonth() {
     
     monthSelect.value = monthKey;
     
-    // Εμφάνιση μηνύματος
     showQuickMessage(`✅ Δημιουργία νέου μήνα: ${monthName}`, 'success');
     
-    // Ανανέωση UI
     updateRecentExpenses();
     updateBudgetOverview();
-    updateAvailableMoney();
+    updateFinancialOverview();
   }
 }
 
-// 2. ΛΕΙΤΟΥΡΓΙΑ ΑΛΛΑΓΗΣ ΕΣΟΔΩΝ
-function initIncomeEditor() {
-  const incomeInput = document.getElementById('incomeInput');
-  incomeInput.value = income > 0 ? income : '';
+// 2. ΟΙ 3 ΚΑΙΝΟΥΡΓΙΕΣ ΚΑΡΤΕΣ ΣΤΗΝ ΚΑΡΤΕΛΑ 1
+function updateFinancialOverview() {
+  // 1. ΕΣΟΔΑ: Άθροισμα όλων των πηγών
+  const totalIncome = (bankBalances.alphaBank || 0) + 
+                     (bankBalances.nationalBank || 0) + 
+                     (bankBalances.cash || 0) + 
+                     (bankBalances.expectedIncome || 0);
   
-  // Event listener για Enter
-  incomeInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-      updateIncome();
-    }
-  });
-}
-
-function updateIncome() {
-  const incomeInput = document.getElementById('incomeInput');
-  const newIncome = parseFloat(incomeInput.value);
+  document.getElementById('totalIncomeDisplay').textContent = totalIncome.toFixed(2) + ' €';
+  document.getElementById('alphaAmount').textContent = (bankBalances.alphaBank || 0).toFixed(2) + ' €';
+  document.getElementById('nationalAmount').textContent = (bankBalances.nationalBank || 0).toFixed(2) + ' €';
+  document.getElementById('cashAmount').textContent = (bankBalances.cash || 0).toFixed(2) + ' €';
+  document.getElementById('expectedAmount').textContent = (bankBalances.expectedIncome || 0).toFixed(2) + ' €';
+  document.getElementById('totalIncomeForCalc').textContent = totalIncome.toFixed(2) + ' €';
   
-  if (isNaN(newIncome) || newIncome < 0) {
-    showQuickMessage('⚠️ Παρακαλώ εισάγετε έγκυρο ποσό εσόδων', 'error');
-    return;
-  }
-  
-  income = newIncome;
-  localStorage.setItem('income', income);
-  
-  saveAllData();
-  
-  // Ενημέρωση display
-  document.getElementById('displayIncome').textContent = income.toFixed(2) + ' €';
-  
-  // Υπολογισμός διαθέσιμων χρημάτων
-  updateAvailableMoney();
-  updateBudgetOverview();
-  
-  showQuickMessage(`✅ Τα έσοδα ενημερώθηκαν σε ${income.toFixed(2)}€`, 'success');
-}
-
-// 3. ΣΥΣΤΗΜΑ ΔΙΑΘΕΣΙΜΩΝ ΧΡΗΜΑΤΩΝ
-function updateAvailableMoney() {
-  // Διαθέσιμα χρήματα = Άθροισμα όλων των υπολοίπων
-  const currentMoney = (bankBalances.alphaBank || 0) + (bankBalances.nationalBank || 0) + (bankBalances.cash || 0);
-  const futureMoney = bankBalances.expectedIncome || 0;
-  const totalAvailable = currentMoney + futureMoney;
-  
-  // Υπολογισμός προϋπολογισμών
-  let totalBudget = 0;
+  // 2. ΥΠΟΛΟΙΠΟ ΠΡΟΣ ΠΛΗΡΩΜΗ: (Σύνολο προϋπολογισμών) - (Ήδη πληρωμένα)
+  let totalBudgets = 0;
   categories.forEach(category => {
-    totalBudget += recurringAmounts[category] || 0;
+    totalBudgets += recurringAmounts[category] || 0;
   });
   
-  // Εμφάνιση
-  document.getElementById('availableForBudget').textContent = totalAvailable.toFixed(2) + ' €';
-  document.getElementById('totalBudgetAmount').textContent = totalBudget.toFixed(2) + ' €';
-  document.getElementById('totalAvailableMoney').textContent = totalAvailable.toFixed(2) + ' €';
-  
-  // Ενημέρωση χρώματος ανάλογα με την διαθεσιμότητα
-  const availableDisplay = document.getElementById('availableForBudget');
-  if (totalBudget > totalAvailable) {
-    availableDisplay.style.color = '#f44336';
-  } else if (totalBudget === totalAvailable) {
-    availableDisplay.style.color = '#ff9800';
-  } else {
-    availableDisplay.style.color = '#4caf50';
-  }
-}
-
-// 4. ΒΕΛΤΙΩΜΕΝΟ ΤΕΛΙΚΟ ΥΠΟΛΟΙΠΟ
-function updateBudgetOverview() {
-  const budgetCardsDiv = document.getElementById('budgetCards');
   const monthExpenses = expenses.filter(e => e.date.startsWith(currentMonth));
+  const alreadyPaid = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
   
-  if (categories.length === 0) {
-    budgetCardsDiv.innerHTML = `
-      <div class="empty-state" style="grid-column: 1/-1;">
-        📂 Δεν υπάρχουν κατηγορίες. Προσθέστε κάποιες από τις ρυθμίσεις!
-      </div>
-    `;
-    return;
-  }
+  const pendingPayment = totalBudgets - alreadyPaid;
   
-  let totalSpent = 0;
-  let totalBudget = 0;
+  document.getElementById('pendingPaymentDisplay').textContent = pendingPayment.toFixed(2) + ' €';
+  document.getElementById('totalBudgetsAmount').textContent = totalBudgets.toFixed(2) + ' €';
+  document.getElementById('alreadyPaidAmount').textContent = alreadyPaid.toFixed(2) + ' €';
   
-  let html = '';
+  // 3. ΕΣΟΔΑ - ΕΞΟΔΑ: (ΕΣΟΔΑ) - (Όσα έχω πληρώσει μέχρι τώρα)
+  const availableAfterExpenses = totalIncome - alreadyPaid;
   
-  categories.forEach(category => {
-    const categoryExpenses = monthExpenses.filter(e => e.category === category);
-    const categorySpent = categoryExpenses.reduce((sum, e) => sum + e.amount, 0);
-    const categoryBudget = recurringAmounts[category] || 0;
-    const remaining = categoryBudget - categorySpent;
-    const percentage = categoryBudget > 0 ? Math.min(100, (categorySpent / categoryBudget) * 100) : 0;
-    
-    totalSpent += categorySpent;
-    totalBudget += categoryBudget;
-    
-    let statusClass = '';
-    if (remaining < 0) {
-      statusClass = 'over';
-    } else if (remaining > 0) {
-      statusClass = 'under';
-    }
-    
-    html += `
-      <div class="budget-card ${statusClass}">
-        <h3 style="margin-top: 0; color: #333;">${category}</h3>
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-          <div>
-            <div style="font-size: 12px; color: #666;">Προϋπολογισμός</div>
-            <div style="font-weight: bold; color: #333;">${categoryBudget.toFixed(2)} €</div>
-          </div>
-          <div style="text-align: right;">
-            <div style="font-size: 12px; color: #666;">Ξοδεύτηκαν</div>
-            <div style="font-weight: bold; color: #e91e63;">${categorySpent.toFixed(2)} €</div>
-          </div>
-        </div>
-        
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: ${percentage}%;"></div>
-        </div>
-        
-        <div style="text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
-          <div style="font-size: 12px; color: #666;">Μένουν</div>
-          <div style="font-size: 20px; font-weight: bold; color: ${remaining >= 0 ? '#4caf50' : '#f44336'}">
-            ${remaining.toFixed(2)} €
-          </div>
-          <div style="font-size: 11px; color: #999;">(${percentage.toFixed(1)}%)</div>
-        </div>
-      </div>
-    `;
-  });
+  document.getElementById('availableAfterExpensesDisplay').textContent = availableAfterExpenses.toFixed(2) + ' €';
+  document.getElementById('totalExpensesAmount').textContent = alreadyPaid.toFixed(2) + ' €';
   
-  budgetCardsDiv.innerHTML = html;
+  // Χρώματα ανάλογα με την κατάσταση
+  const pendingElement = document.getElementById('pendingPaymentDisplay');
+  const availableElement = document.getElementById('availableAfterExpensesDisplay');
   
-  // Ενημέρωση εσόδων και ξοδεμένων
-  document.getElementById('displayIncome').textContent = income.toFixed(2) + ' €';
-  document.getElementById('displaySpent').textContent = totalSpent.toFixed(2) + ' €';
-  
-  // ΝΕΑ ΛΟΓΙΚΗ ΤΕΛΙΚΟΥ ΥΠΟΛΟΙΠΟΥ
-  // Τελικό Υπόλοιπο = Διαθέσιμα Χρήματα (από τράπεζες) - Ξοδεύτηκαν
-  
-  // Διαθέσιμα χρήματα
-  const currentMoney = (bankBalances.alphaBank || 0) + (bankBalances.nationalBank || 0) + (bankBalances.cash || 0);
-  const futureMoney = bankBalances.expectedIncome || 0;
-  const totalAvailableMoney = currentMoney + futureMoney;
-  
-  // Τελικό Υπόλοιπο
-  const finalBalance = totalAvailableMoney - totalSpent;
-  
-  document.getElementById('finalBalanceDisplay').textContent = finalBalance.toFixed(2) + ' €';
-  
-  // Επεξήγηση
-  const explanation = document.getElementById('finalBalanceExplanation');
-  explanation.innerHTML = `
-    Διαθέσιμα: ${totalAvailableMoney.toFixed(2)}€ - Ξοδεύτηκαν: ${totalSpent.toFixed(2)}€<br>
-    <small style="color: #999;">(Από τράπεζα: ${currentMoney.toFixed(2)}€ + Θα πάρω: ${futureMoney.toFixed(2)}€)</small>
-  `;
-  
-  // Χρώμα ανάλογα με το υπόλοιπο
-  if (finalBalance < 0) {
-    document.getElementById('finalBalanceDisplay').style.color = '#f44336';
-  } else if (finalBalance < totalAvailableMoney * 0.1) {
-    document.getElementById('finalBalanceDisplay').style.color = '#ff9800';
+  if (pendingPayment < 0) {
+    pendingElement.style.color = '#f44336';
+  } else if (pendingPayment === 0) {
+    pendingElement.style.color = '#ff9800';
   } else {
-    document.getElementById('finalBalanceDisplay').style.color = '#4caf50';
+    pendingElement.style.color = '#4caf50';
   }
   
-  // Ενημέρωση διαθέσιμων χρημάτων
-  updateAvailableMoney();
+  if (availableAfterExpenses < 0) {
+    availableElement.style.color = '#f44336';
+  } else if (availableAfterExpenses < totalIncome * 0.1) {
+    availableElement.style.color = '#ff9800';
+  } else {
+    availableElement.style.color = '#2196f3';
+  }
 }
 
 // ==================== ΒΑΣΙΚΕΣ ΛΕΙΤΟΥΡΓΙΕΣ ====================
@@ -1468,6 +1330,10 @@ function switchTab(tabNumber) {
   
   document.querySelector(`.tab:nth-child(${tabNumber})`).classList.add('active');
   document.getElementById(`tab${tabNumber}`).classList.add('active');
+  
+  if (tabNumber === 1) {
+    updateFinancialOverview();
+  }
   
   if (tabNumber === 2) {
     updateBudgetOverview();
@@ -1515,7 +1381,6 @@ function showQuickMessage(message, type = 'info') {
   }, 3000);
 }
 
-// Δημιουργία CSS animations
 if (!document.getElementById('msg-styles')) {
   const style = document.createElement('style');
   style.id = 'msg-styles';
@@ -1874,7 +1739,6 @@ function saveAllData() {
   localStorage.setItem('cats', JSON.stringify(categories));
   localStorage.setItem('expenses', JSON.stringify(expenses));
   localStorage.setItem('recurringAmounts', JSON.stringify(recurringAmounts));
-  localStorage.setItem('income', income);
   localStorage.setItem('bankBalances', JSON.stringify(bankBalances));
   localStorage.setItem('currentMonth', currentMonth);
   
@@ -1891,7 +1755,7 @@ function updateUIFromData() {
   
   updateRecentExpenses();
   updateBudgetOverview();
-  updateAvailableMoney();
+  updateFinancialOverview();
 }
 
 function deleteExpense(expenseId) {
@@ -1907,7 +1771,7 @@ function deleteExpense(expenseId) {
     saveAllData();
     updateRecentExpenses();
     updateBudgetOverview();
-    updateAvailableMoney();
+    updateFinancialOverview();
     
     showQuickMessage(`🗑️ Διαγράφηκε έξοδο ${deletedExpense.category} - ${deletedExpense.amount.toFixed(2)}€`, 'success');
   }
@@ -1953,8 +1817,6 @@ function loadBankValues() {
   document.getElementById('nationalBank').value = bankBalances.nationalBank > 0 ? bankBalances.nationalBank : '';
   document.getElementById('cash').value = bankBalances.cash > 0 ? bankBalances.cash : '';
   document.getElementById('expectedIncome').value = bankBalances.expectedIncome > 0 ? bankBalances.expectedIncome : '';
-  
-  updateAvailableMoney();
 }
 
 function saveBankBalances() {
@@ -1966,8 +1828,7 @@ function saveBankBalances() {
   };
   
   saveAllData();
-  updateAvailableMoney();
-  updateBudgetOverview();
+  updateFinancialOverview();
   
   showQuickMessage('💰 Τα τραπεζικά υπόλοιπα αποθηκεύτηκαν!', 'success');
 }
@@ -2084,7 +1945,7 @@ function updateSingleRecurringAmount(category, value) {
   const numValue = parseFloat(value) || 0;
   recurringAmounts[category] = numValue;
   saveAllData();
-  updateAvailableMoney();
+  updateFinancialOverview();
 }
 
 function saveRecurringAmounts() {
@@ -2106,7 +1967,7 @@ function saveRecurringAmounts() {
   });
   
   saveAllData();
-  updateAvailableMoney();
+  updateFinancialOverview();
   
   showQuickMessage('💾 Οι μηνιαίοι προϋπολογισμοί αποθηκεύτηκαν!', 'success');
 }
@@ -2172,9 +2033,76 @@ function addExpense() {
   
   updateRecentExpenses();
   updateBudgetOverview();
-  updateAvailableMoney();
+  updateFinancialOverview();
   
   document.getElementById('amount').focus();
+}
+
+function updateBudgetOverview() {
+  const budgetCardsDiv = document.getElementById('budgetCards');
+  const monthExpenses = expenses.filter(e => e.date.startsWith(currentMonth));
+  
+  if (categories.length === 0) {
+    budgetCardsDiv.innerHTML = `
+      <div class="empty-state" style="grid-column: 1/-1;">
+        📂 Δεν υπάρχουν κατηγορίες. Προσθέστε κάποιες από τις ρυθμίσεις!
+      </div>
+    `;
+    return;
+  }
+  
+  let totalSpent = 0;
+  let totalBudget = 0;
+  
+  let html = '';
+  
+  categories.forEach(category => {
+    const categoryExpenses = monthExpenses.filter(e => e.category === category);
+    const categorySpent = categoryExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const categoryBudget = recurringAmounts[category] || 0;
+    const remaining = categoryBudget - categorySpent;
+    const percentage = categoryBudget > 0 ? Math.min(100, (categorySpent / categoryBudget) * 100) : 0;
+    
+    totalSpent += categorySpent;
+    totalBudget += categoryBudget;
+    
+    let statusClass = '';
+    if (remaining < 0) {
+      statusClass = 'over';
+    } else if (remaining > 0) {
+      statusClass = 'under';
+    }
+    
+    html += `
+      <div class="budget-card ${statusClass}">
+        <h3 style="margin-top: 0; color: #333;">${category}</h3>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <div>
+            <div style="font-size: 12px; color: #666;">Προϋπολογισμός</div>
+            <div style="font-weight: bold; color: #333;">${categoryBudget.toFixed(2)} €</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 12px; color: #666;">Ξοδεύτηκαν</div>
+            <div style="font-weight: bold; color: #e91e63;">${categorySpent.toFixed(2)} €</div>
+          </div>
+        </div>
+        
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${percentage}%;"></div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
+          <div style="font-size: 12px; color: #666;">Μένουν</div>
+          <div style="font-size: 20px; font-weight: bold; color: ${remaining >= 0 ? '#4caf50' : '#f44336'}">
+            ${remaining.toFixed(2)} €
+          </div>
+          <div style="font-size: 11px; color: #999;">(${percentage.toFixed(1)}%)</div>
+        </div>
+      </div>
+    `;
+  });
+  
+  budgetCardsDiv.innerHTML = html;
 }
 
 // ==================== INITIALIZATION ====================
@@ -2202,14 +2130,11 @@ window.onload = function() {
   updateRecurringInputs();
   loadBankValues();
   
-  // ΝΕΕΣ ΛΕΙΤΟΥΡΓΙΕΣ
   initMonthSelector();
-  initIncomeEditor();
-  updateAvailableMoney();
+  updateFinancialOverview();
   
   initSync();
   
-  // Event listeners για το πεδίο προσθήκης εξόδων
   document.getElementById('amount').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -2250,18 +2175,16 @@ window.onload = function() {
     }
   });
   
-  // Event listeners για αυτόματη ενημέρωση διαθέσιμων χρημάτων
   const bankInputs = ['alphaBank', 'nationalBank', 'cash', 'expectedIncome'];
   bankInputs.forEach(id => {
     const input = document.getElementById(id);
     if (input) {
       input.addEventListener('input', function() {
-        setTimeout(updateAvailableMoney, 500);
+        setTimeout(updateFinancialOverview, 500);
       });
     }
   });
   
-  // Αυτόματη αποθήκευση κάθε 60 δευτερόλεπτα
   setInterval(() => {
     if (currentBudget && !isSyncing) {
       syncToFirebase();
