@@ -537,7 +537,7 @@
     transform: translateY(-2px);
   }
 
-  /* ΝΕΟ: ΟΙ 3 ΚΑΙΝΟΥΡΓΙΕΣ ΚΑΡΤΕΣ ΣΤΗΝ ΚΑΡΤΕΛΑ 1 */
+  /* ΟΙ 3 ΚΑΙΝΟΥΡΓΙΕΣ ΚΑΡΤΕΣ ΣΤΗΝ ΚΑΡΤΕΛΑ 1 */
   .financial-overview {
     background: linear-gradient(to bottom, #f8f9ff, #f5f7ff);
     border-radius: 12px;
@@ -560,16 +560,16 @@
     margin-bottom: 0;
   }
 
-  .financial-card.income {
-    border-left-color: #4caf50;
+  .financial-card.manual {
+    border-left-color: #2196f3;
   }
 
   .financial-card.pending {
     border-left-color: #ff9800;
   }
 
-  .financial-card.available {
-    border-left-color: #2196f3;
+  .financial-card.app {
+    border-left-color: #9c27b0;
   }
 
   .financial-card h4 {
@@ -599,6 +599,33 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 4px;
+  }
+
+  /* SETTING FOR APP BALANCE */
+  .app-balance-input {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .app-balance-input input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+
+  .app-balance-input button {
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 15px;
+    cursor: pointer;
+  }
+
+  .app-balance-input button:hover {
+    background: #45a049;
   }
 
   /* RESPONSIVE */
@@ -680,6 +707,10 @@
     
     .financial-amount {
       font-size: 20px;
+    }
+    
+    .app-balance-input {
+      flex-direction: column;
     }
   }
 
@@ -814,15 +845,15 @@
       </div>
     </div>
 
-    <!-- ΝΕΑ: ΟΙ 3 ΚΑΡΤΕΣ -->
+    <!-- ΟΙ 3 ΚΑΡΤΕΣ -->
     <div class="financial-overview">
       <h3 style="margin-top: 0; color: #333; text-align: center; margin-bottom: 15px;">💰 ΣΥΝΟΛΙΚΗ ΟΙΚΟΝΟΜΙΚΗ ΕΙΚΟΝΑ</h3>
       
-      <!-- ΚΑΡΤΑ 1: ΕΣΟΔΑ -->
-      <div class="financial-card income">
-        <h4>💰 ΕΣΟΔΑ</h4>
-        <div class="financial-amount" id="totalIncomeDisplay">0.00 €</div>
-        <div class="financial-details" id="incomeDetails">
+      <!-- ΚΑΡΤΑ 1: ΔΙΑΘΕΣΙΜΟ ΥΠΟΛΟΙΠΟ ΧΕΙΡΟΚΙΝΗΤΑ -->
+      <div class="financial-card manual">
+        <h4>💰 ΔΙΑΘΕΣΙΜΟ ΥΠΟΛΟΙΠΟ ΧΕΙΡΟΚΙΝΗΤΑ</h4>
+        <div class="financial-amount" id="totalManualDisplay">0.00 €</div>
+        <div class="financial-details" id="manualDetails">
           <div><span>Αλφα Τράπεζα:</span> <span id="alphaAmount">0.00 €</span></div>
           <div><span>Εθνική Τράπεζα:</span> <span id="nationalAmount">0.00 €</span></div>
           <div><span>Μετρητά:</span> <span id="cashAmount">0.00 €</span></div>
@@ -840,13 +871,18 @@
         </div>
       </div>
       
-      <!-- ΚΑΡΤΑ 3: ΕΣΟΔΑ - ΕΞΟΔΑ -->
-      <div class="financial-card available">
-        <h4>✅ ΕΣΟΔΑ - ΕΞΟΔΑ</h4>
-        <div class="financial-amount" id="availableAfterExpensesDisplay">0.00 €</div>
+      <!-- ΚΑΡΤΑ 3: ΔΙΑΘΕΣΙΜΟ ΥΠΟΛΟΙΠΟ ΑΠΟ ΠΛΗΡΩΜΕΣ ΕΦΑΡΜΟΓΗΣ -->
+      <div class="financial-card app">
+        <h4>📱 ΔΙΑΘΕΣΙΜΟ ΥΠΟΛΟΙΠΟ ΑΠΟ ΠΛΗΡΩΜΕΣ ΕΦΑΡΜΟΓΗΣ</h4>
+        <div class="financial-amount" id="appBalanceDisplay">0.00 €</div>
         <div class="financial-details">
-          <div><span>Συνολικά Έσοδα:</span> <span id="totalIncomeForCalc">0.00 €</span></div>
-          <div><span>Συνολικά Έξοδα:</span> <span id="totalExpensesAmount">0.00 €</span></div>
+          <div><span>Αρχικό Ποσό:</span> <span id="initialAppAmount">0.00 €</span></div>
+          <div><span>Έχω ξοδέψει:</span> <span id="appSpentAmount">0.00 €</span></div>
+          <div><span>Απομένουν:</span> <span id="appRemainingAmount">0.00 €</span></div>
+        </div>
+        <div class="app-balance-input">
+          <input type="number" id="initialAppBalanceInput" step="0.01" placeholder="Βάλε αρχικό ποσό">
+          <button onclick="setInitialAppBalance()">💾 Αποθήκευση</button>
         </div>
       </div>
     </div>
@@ -957,6 +993,11 @@ let bankBalances = JSON.parse(localStorage.getItem('bankBalances') || JSON.strin
   expectedIncome: 0
 }));
 
+let appBalanceData = JSON.parse(localStorage.getItem('budgetbuddy_app_balance') || JSON.stringify({
+  initialBalance: 0,
+  spent: 0
+}));
+
 let syncData = JSON.parse(localStorage.getItem('budgetbuddy_sync') || '{}');
 let currentUser = syncData.userName || "Οικογένεια";
 let currentBudget = syncData.budgetCode || null;
@@ -1057,6 +1098,11 @@ function initSync() {
           bankBalances = data.bankBalances;
         }
         
+        if (data.appBalanceData && Object.keys(appBalanceData).length === 2) {
+          appBalanceData = data.appBalanceData;
+          localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
+        }
+        
         syncData.budgetName = data.name || syncData.budgetName;
         syncData.creator = data.creator || syncData.creator;
         syncData.members = data.members || [currentUser];
@@ -1109,6 +1155,11 @@ function updateUIFromSync(data) {
       }
     }
     
+    if (data.appBalanceData) {
+      appBalanceData = data.appBalanceData;
+      localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
+    }
+    
     saveAllData();
     updateUIFromData();
   }
@@ -1140,6 +1191,7 @@ function syncToFirebase() {
     expenses: expenses.slice(-100),
     recurringAmounts: recurringAmounts,
     bankBalances: bankBalances,
+    appBalanceData: appBalanceData,
     lastUpdated: Date.now()
   };
   
@@ -1169,6 +1221,7 @@ function createNewBudgetInFirebase() {
     expenses: expenses,
     recurringAmounts: recurringAmounts,
     bankBalances: bankBalances,
+    appBalanceData: appBalanceData,
     lastUpdated: Date.now()
   };
   
@@ -1268,18 +1321,17 @@ function createNewMonth() {
 
 // 2. ΟΙ 3 ΚΑΙΝΟΥΡΓΙΕΣ ΚΑΡΤΕΣ ΣΤΗΝ ΚΑΡΤΕΛΑ 1
 function updateFinancialOverview() {
-  // 1. ΕΣΟΔΑ: Άθροισμα όλων των πηγών
-  const totalIncome = (bankBalances.alphaBank || 0) + 
+  // 1. ΔΙΑΘΕΣΙΜΟ ΥΠΟΛΟΙΠΟ ΧΕΙΡΟΚΙΝΗΤΑ: Άθροισμα όλων των πηγών
+  const totalManual = (bankBalances.alphaBank || 0) + 
                      (bankBalances.nationalBank || 0) + 
                      (bankBalances.cash || 0) + 
                      (bankBalances.expectedIncome || 0);
   
-  document.getElementById('totalIncomeDisplay').textContent = totalIncome.toFixed(2) + ' €';
+  document.getElementById('totalManualDisplay').textContent = totalManual.toFixed(2) + ' €';
   document.getElementById('alphaAmount').textContent = (bankBalances.alphaBank || 0).toFixed(2) + ' €';
   document.getElementById('nationalAmount').textContent = (bankBalances.nationalBank || 0).toFixed(2) + ' €';
   document.getElementById('cashAmount').textContent = (bankBalances.cash || 0).toFixed(2) + ' €';
   document.getElementById('expectedAmount').textContent = (bankBalances.expectedIncome || 0).toFixed(2) + ' €';
-  document.getElementById('totalIncomeForCalc').textContent = totalIncome.toFixed(2) + ' €';
   
   // 2. ΥΠΟΛΟΙΠΟ ΠΡΟΣ ΠΛΗΡΩΜΗ: (Σύνολο προϋπολογισμών) - (Ήδη πληρωμένα)
   let totalBudgets = 0;
@@ -1296,15 +1348,19 @@ function updateFinancialOverview() {
   document.getElementById('totalBudgetsAmount').textContent = totalBudgets.toFixed(2) + ' €';
   document.getElementById('alreadyPaidAmount').textContent = alreadyPaid.toFixed(2) + ' €';
   
-  // 3. ΕΣΟΔΑ - ΕΞΟΔΑ: (ΕΣΟΔΑ) - (Όσα έχω πληρώσει μέχρι τώρα)
-  const availableAfterExpenses = totalIncome - alreadyPaid;
+  // 3. ΔΙΑΘΕΣΙΜΟ ΥΠΟΛΟΙΠΟ ΑΠΟ ΠΛΗΡΩΜΕΣ ΕΦΑΡΜΟΓΗΣ
+  const initialAppBalance = appBalanceData.initialBalance || 0;
+  const appSpent = appBalanceData.spent || 0;
+  const appRemaining = initialAppBalance - appSpent;
   
-  document.getElementById('availableAfterExpensesDisplay').textContent = availableAfterExpenses.toFixed(2) + ' €';
-  document.getElementById('totalExpensesAmount').textContent = alreadyPaid.toFixed(2) + ' €';
+  document.getElementById('appBalanceDisplay').textContent = appRemaining.toFixed(2) + ' €';
+  document.getElementById('initialAppAmount').textContent = initialAppBalance.toFixed(2) + ' €';
+  document.getElementById('appSpentAmount').textContent = appSpent.toFixed(2) + ' €';
+  document.getElementById('appRemainingAmount').textContent = appRemaining.toFixed(2) + ' €';
   
   // Χρώματα ανάλογα με την κατάσταση
   const pendingElement = document.getElementById('pendingPaymentDisplay');
-  const availableElement = document.getElementById('availableAfterExpensesDisplay');
+  const appElement = document.getElementById('appBalanceDisplay');
   
   if (pendingPayment < 0) {
     pendingElement.style.color = '#f44336';
@@ -1314,12 +1370,53 @@ function updateFinancialOverview() {
     pendingElement.style.color = '#4caf50';
   }
   
-  if (availableAfterExpenses < 0) {
-    availableElement.style.color = '#f44336';
-  } else if (availableAfterExpenses < totalIncome * 0.1) {
-    availableElement.style.color = '#ff9800';
+  if (appRemaining < 0) {
+    appElement.style.color = '#f44336';
+  } else if (appRemaining < initialAppBalance * 0.1) {
+    appElement.style.color = '#ff9800';
   } else {
-    availableElement.style.color = '#2196f3';
+    appElement.style.color = '#9c27b0';
+  }
+}
+
+// 3. ΛΕΙΤΟΥΡΓΙΕΣ ΓΙΑ ΔΙΑΘΕΣΙΜΟ ΥΠΟΛΟΙΠΟ ΑΠΟ ΠΛΗΡΩΜΕΣ ΕΦΑΡΜΟΓΗΣ
+function setInitialAppBalance() {
+  const input = document.getElementById('initialAppBalanceInput');
+  const amount = parseFloat(input.value) || 0;
+  
+  if (amount < 0) {
+    showQuickMessage('⚠️ Το ποσό δεν μπορεί να είναι αρνητικό', 'error');
+    return;
+  }
+  
+  // Αποθηκεύουμε το νέο αρχικό ποσό
+  appBalanceData.initialBalance = amount;
+  
+  // ΔΕΝ μηδενίζουμε τα έξοδα, διατηρούμε τα υπάρχοντα
+  // appBalanceData.spent παραμένει ως έχει
+  
+  localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
+  
+  // Συγχρονίζουμε με Firebase
+  debouncedSync();
+  
+  updateFinancialOverview();
+  
+  input.value = '';
+  showQuickMessage(`✅ Ορίστηκε αρχικό διαθέσιμο ποσό: ${amount.toFixed(2)}€`, 'success');
+}
+
+function resetAppBalance() {
+  if (confirm('Θέλετε να μηδενίσετε το διαθέσιμο υπόλοιπο εφαρμογής;\nΘα διαγραφεί το αρχικό ποσό και όλα τα έξοδα.')) {
+    appBalanceData = {
+      initialBalance: 0,
+      spent: 0
+    };
+    
+    localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
+    debouncedSync();
+    updateFinancialOverview();
+    showQuickMessage('🧹 Μηδενίστηκε το διαθέσιμο υπόλοιπο εφαρμογής', 'success');
   }
 }
 
@@ -1768,6 +1865,11 @@ function deleteExpense(expenseId) {
     const deletedExpense = expenses[expenseIndex];
     expenses.splice(expenseIndex, 1);
     
+    // Αφαίρεση ποσού από το διαθέσιμο υπόλοιπο εφαρμογής
+    appBalanceData.spent -= deletedExpense.amount;
+    if (appBalanceData.spent < 0) appBalanceData.spent = 0;
+    localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
+    
     saveAllData();
     updateRecentExpenses();
     updateBudgetOverview();
@@ -1895,6 +1997,16 @@ function deleteCategory(index) {
   }
   
   categories.splice(index, 1);
+  
+  // Αφαίρεση ποσών από τα έξοδα και το app balance
+  const deletedExpenses = expenses.filter(e => e.category === categoryName);
+  const totalDeletedAmount = deletedExpenses.reduce((sum, e) => sum + e.amount, 0);
+  
+  // Αφαίρεση από το app balance
+  appBalanceData.spent -= totalDeletedAmount;
+  if (appBalanceData.spent < 0) appBalanceData.spent = 0;
+  localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
+  
   expenses = expenses.filter(e => e.category !== categoryName);
   
   if (recurringAmounts[categoryName]) {
@@ -2011,6 +2123,10 @@ function addExpense() {
   };
   
   expenses.push(newExpense);
+  
+  // Προσθήκη ποσού στο διαθέσιμο υπόλοιπο εφαρμογής
+  appBalanceData.spent += amount;
+  localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
   
   document.getElementById('amount').value = '';
   document.getElementById('note').value = '';
@@ -2172,6 +2288,13 @@ window.onload = function() {
           document.getElementById('newCategoryName').focus();
         }, 100);
       }
+    }
+  });
+  
+  document.getElementById('initialAppBalanceInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      setInitialAppBalance();
     }
   });
   
