@@ -1,5 +1,4 @@
-<!-- ΑΝΤΙΓΡΑΦΗ ΟΛΟΥ ΤΟΥ ΚΩΔΙΚΑ ΜΕ ΤΙΣ ΑΛΛΑΓΕΣ -->
-
+<!-- ΟΛΟΚΛΗΡΟΣ ΔΙΟΡΘΩΜΕΝΟΣ ΚΩΔΙΚΑΣ -->
 <!DOCTYPE html>
 <html lang="el">
 <head>
@@ -376,6 +375,10 @@
     border-left-color: #4caf50;
   }
 
+  .budget-card.savings {
+    border-left-color: #ff9800;
+  }
+
   .progress-bar {
     height: 8px;
     background: #f0f0f0;
@@ -628,6 +631,27 @@
     background: #45a049;
   }
 
+  /* TRANSFER SYSTEM */
+  .transfer-system {
+    background: linear-gradient(to right, #fff8e1, #f3e5f5);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    border: 1px solid #ffe0b2;
+  }
+
+  .transfer-history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    border-left: 3px solid #ff9800;
+    font-size: 13px;
+  }
+
   /* RESPONSIVE */
   @media (max-width: 768px) {
     .container {
@@ -711,6 +735,10 @@
     
     .app-balance-input {
       flex-direction: column;
+    }
+
+    .transfer-system .transfer-controls {
+      grid-template-columns: 1fr;
     }
   }
 
@@ -897,6 +925,56 @@
   <div id="tab2" class="tab-content">
     <h2 style="color: #e91e63; margin-top: 0;">📊 Υπόλοιπα ανά Κατηγορία</h2>
     
+    <!-- ΣΥΣΤΗΜΑ ΜΕΤΑΦΟΡΩΝ -->
+    <div class="transfer-system">
+      <h4 style="margin-top: 0; color: #ff9800;">🔄 Μεταφορά Ποσών</h4>
+      <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Μεταφέρετε ποσό από μία κατηγορία σε άλλη (ή από/προς αποταμίευση)</p>
+      
+      <div class="transfer-controls" style="display: grid; grid-template-columns: 1fr auto 1fr auto; gap: 10px; align-items: end; margin-bottom: 15px;">
+        <!-- ΑΠΟ -->
+        <div>
+          <label style="font-size: 12px; color: #666; display: block; margin-bottom: 5px;">Από:</label>
+          <select id="transferFrom" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+            <option value="">Επιλέξτε πηγή...</option>
+            <option value="savings">💰 Γενική Αποταμίευση</option>
+            <!-- Θα προστεθούν οι κατηγορίες με JavaScript -->
+          </select>
+        </div>
+        
+        <!-- ΠΟΣΟ -->
+        <div>
+          <label style="font-size: 12px; color: #666; display: block; margin-bottom: 5px;">Ποσό:</label>
+          <div style="position: relative;">
+            <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #ff9800; font-weight: bold;">€</span>
+            <input type="number" id="transferAmount" step="0.01" placeholder="0.00" 
+                   style="width: 120px; padding: 10px 10px 10px 30px; border-radius: 5px; border: 1px solid #ddd;">
+          </div>
+        </div>
+        
+        <!-- ΠΡΟΣ -->
+        <div>
+          <label style="font-size: 12px; color: #666; display: block; margin-bottom: 5px;">Προς:</label>
+          <select id="transferTo" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+            <option value="">Επιλέξτε προορισμό...</option>
+            <option value="savings">💰 Γενική Αποταμίευση</option>
+            <!-- Θα προστεθούν οι κατηγορίες με JavaScript -->
+          </select>
+        </div>
+        
+        <!-- ΚΟΥΜΠΙ -->
+        <div>
+          <button onclick="makeTransfer()" 
+                  style="background: #ff9800; color: white; border: none; border-radius: 5px; padding: 10px 15px; cursor: pointer; height: 42px; width: 100%;">
+            🔄 Μεταφορά
+          </button>
+        </div>
+      </div>
+      
+      <div id="transferHistory" style="margin-top: 15px; max-height: 150px; overflow-y: auto; padding: 10px; background: rgba(255, 255, 255, 0.7); border-radius: 8px;">
+        <!-- Ιστορικό μεταφορών -->
+      </div>
+    </div>
+    
     <div class="budget-cards" id="budgetCards"></div>
   </div>
 
@@ -998,6 +1076,14 @@ let appBalanceData = JSON.parse(localStorage.getItem('budgetbuddy_app_balance') 
   spent: 0
 }));
 
+// ΝΕΕΣ ΜΕΤΑΒΛΗΤΕΣ ΓΙΑ ΜΕΤΑΦΟΡΕΣ ΚΑΙ ΑΠΟΤΑΜΙΕΥΣΗ
+let transfers = JSON.parse(localStorage.getItem('budgetbuddy_transfers') || '[]');
+let savings = JSON.parse(localStorage.getItem('budgetbuddy_savings') || JSON.stringify({
+  general: 0,
+  totalAdded: 0,
+  totalUsed: 0
+}));
+
 let syncData = JSON.parse(localStorage.getItem('budgetbuddy_sync') || '{}');
 let currentUser = syncData.userName || "Οικογένεια";
 let currentBudget = syncData.budgetCode || null;
@@ -1010,6 +1096,238 @@ let dragStartIndex = null;
 
 let syncTimeout = null;
 let isSyncing = false;
+
+// ==================== ΔΙΟΡΘΩΣΗ BUG - ΥΠΟΛΟΓΙΣΜΟΣ ΣΩΣΤΟΥ SPENT ====================
+function recalculateAppBalanceSpent() {
+  // Υπολογίζουμε το συνολικό ποσό που έχει ξοδευτεί (μόνο για τον τρέχοντα μήνα)
+  const monthExpenses = expenses.filter(e => e.date.startsWith(currentMonth));
+  const totalSpentThisMonth = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+  
+  // Ενημερώνουμε το appBalanceData.spent
+  appBalanceData.spent = totalSpentThisMonth;
+  
+  // Αποθηκεύουμε
+  localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
+}
+
+// ==================== ΣΥΣΤΗΜΑ ΜΕΤΑΦΟΡΩΝ ====================
+function loadTransferUI() {
+  const fromSelect = document.getElementById('transferFrom');
+  const toSelect = document.getElementById('transferTo');
+  
+  // Καθαρίζουμε τις υπάρχουσες επιλογές (κρατάμε μόνο την πρώτη)
+  fromSelect.innerHTML = '<option value="">Επιλέξτε πηγή...</option><option value="savings">💰 Γενική Αποταμίευση</option>';
+  toSelect.innerHTML = '<option value="">Επιλέξτε προορισμό...</option><option value="savings">💰 Γενική Αποταμίευση</option>';
+  
+  // Προσθέτουμε όλες τις κατηγορίες
+  categories.forEach(category => {
+    const monthExpenses = expenses.filter(e => e.date.startsWith(currentMonth) && e.category === category);
+    const categorySpent = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const categoryBudget = recurringAmounts[category] || 0;
+    
+    // ΥΠΟΛΟΓΙΣΜΟΣ ΜΕΤΑΦΟΡΩΝ ΓΙΑ ΤΗΝ ΚΑΤΗΓΟΡΙΑ
+    const transfersToCategory = transfers.filter(t => 
+      t.month === currentMonth && t.to === category
+    );
+    const transfersFromCategory = transfers.filter(t => 
+      t.month === currentMonth && t.from === category
+    );
+    
+    const totalTransferredIn = transfersToCategory.reduce((sum, t) => sum + t.amount, 0);
+    const totalTransferredOut = transfersFromCategory.reduce((sum, t) => sum + t.amount, 0);
+    
+    const adjustedBudget = categoryBudget + totalTransferredIn - totalTransferredOut;
+    const remaining = adjustedBudget - categorySpent;
+    
+    // Μόνο κατηγορίες με διαθέσιμο υπόλοιπο (>0) μπορούν να είναι πηγές
+    if (remaining > 0) {
+      fromSelect.innerHTML += `<option value="${category}">${category} (Διαθέσιμα: ${remaining.toFixed(2)}€)</option>`;
+    }
+    
+    // Όλες οι κατηγορίες μπορούν να είναι προορισμοί
+    toSelect.innerHTML += `<option value="${category}">${category}</option>`;
+  });
+  
+  updateTransferHistory();
+}
+
+function makeTransfer() {
+  const from = document.getElementById('transferFrom').value;
+  const to = document.getElementById('transferTo').value;
+  const amountInput = document.getElementById('transferAmount');
+  const amount = parseFloat(amountInput.value) || 0;
+  
+  // Επαλήθευση
+  if (!from || !to) {
+    showQuickMessage('⚠️ Επιλέξτε πηγή και προορισμό', 'error');
+    return;
+  }
+  
+  if (from === to) {
+    showQuickMessage('⚠️ Η πηγή και ο προορισμός δεν μπορούν να είναι ίδιοι', 'error');
+    return;
+  }
+  
+  if (amount <= 0) {
+    showQuickMessage('⚠️ Εισάγετε έγκυρο ποσό', 'error');
+    return;
+  }
+  
+  // ΕΛΕΓΧΟΙ:
+  if (from !== 'savings') {
+    // Μεταφορά από κατηγορία - ελέγχουμε αν έχει αρκετό διαθέσιμο
+    const monthExpenses = expenses.filter(e => e.date.startsWith(currentMonth) && e.category === from);
+    const categorySpent = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+    const categoryBudget = recurringAmounts[from] || 0;
+    
+    // ΥΠΟΛΟΓΙΣΜΟΣ ΜΕΤΑΦΟΡΩΝ ΓΙΑ ΤΗΝ ΚΑΤΗΓΟΡΙΑ
+    const transfersToCategory = transfers.filter(t => 
+      t.month === currentMonth && t.to === from
+    );
+    const transfersFromCategory = transfers.filter(t => 
+      t.month === currentMonth && t.from === from
+    );
+    
+    const totalTransferredIn = transfersToCategory.reduce((sum, t) => sum + t.amount, 0);
+    const totalTransferredOut = transfersFromCategory.reduce((sum, t) => sum + t.amount, 0);
+    
+    const adjustedBudget = categoryBudget + totalTransferredIn - totalTransferredOut;
+    const remaining = adjustedBudget - categorySpent;
+    
+    if (amount > remaining) {
+      showQuickMessage(`⚠️ Δεν υπάρχουν αρκετά διαθέσιμα (Έχεις: ${remaining.toFixed(2)}€)`, 'error');
+      return;
+    }
+  } else {
+    // Μεταφορά από αποταμίευση - ελέγχουμε αν υπάρχει διαθέσιμο
+    if (amount > savings.general) {
+      showQuickMessage(`⚠️ Δεν υπάρχει αρκετή αποταμίευση (Έχεις: ${savings.general.toFixed(2)}€)`, 'error');
+      return;
+    }
+  }
+  
+  // ΚΑΤΑΧΩΡΗΣΗ ΜΕΤΑΦΟΡΑΣ
+  const transfer = {
+    id: Date.now(),
+    from: from,
+    to: to,
+    amount: amount,
+    month: currentMonth,
+    date: new Date().toISOString().slice(0,10),
+    timestamp: Date.now()
+  };
+  
+  transfers.push(transfer);
+  localStorage.setItem('budgetbuddy_transfers', JSON.stringify(transfers));
+  
+  // ΕΝΗΜΕΡΩΣΗ ΑΠΟΤΑΜΙΕΥΣΗΣ
+  if (from === 'savings') {
+    savings.general -= amount;
+    savings.totalUsed += amount;
+  }
+  
+  if (to === 'savings') {
+    savings.general += amount;
+    savings.totalAdded += amount;
+  }
+  
+  localStorage.setItem('budgetbuddy_savings', JSON.stringify(savings));
+  
+  // Reset
+  amountInput.value = '';
+  
+  saveAllData();
+  updateBudgetOverview();
+  updateFinancialOverview();
+  loadTransferUI(); // Ανανέωση των dropdowns
+  
+  showQuickMessage(`✅ Μεταφέρθηκαν ${amount.toFixed(2)}€ από ${getTransferLabel(from)} προς ${getTransferLabel(to)}`, 'success');
+}
+
+function getTransferLabel(value) {
+  if (value === 'savings') return '💰 Αποταμίευση';
+  return value;
+}
+
+function updateTransferHistory() {
+  const container = document.getElementById('transferHistory');
+  const monthTransfers = transfers.filter(t => t.month === currentMonth);
+  
+  if (monthTransfers.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 10px; color: #777; font-size: 13px;">
+        📭 Δεν υπάρχουν μεταφορές για αυτόν τον μήνα
+      </div>
+    `;
+    return;
+  }
+  
+  let html = `
+    <div style="font-size: 12px; color: #666; margin-bottom: 8px;">
+      <strong>Ιστορικό Μεταφορών</strong> (${monthTransfers.length})
+    </div>
+  `;
+  
+  // Ταξινόμηση από νεότερο προς παλιότερο
+  monthTransfers.sort((a, b) => b.timestamp - a.timestamp);
+  
+  monthTransfers.forEach(transfer => {
+    html += `
+      <div class="transfer-history-item">
+        <div>
+          <div style="font-weight: bold; font-size: 12px;">
+            ${getTransferLabel(transfer.from)} → ${getTransferLabel(transfer.to)}
+          </div>
+          <div style="font-size: 11px; color: #999;">${transfer.date}</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="color: #ff9800; font-weight: bold;">${transfer.amount.toFixed(2)}€</span>
+          <button onclick="deleteTransfer(${transfer.id})" 
+                  style="background: #ffcdd2; color: #c62828; border: none; border-radius: 3px; padding: 2px 6px; font-size: 10px; cursor: pointer; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+            ×
+          </button>
+        </div>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
+function deleteTransfer(transferId) {
+  if (!confirm('Διαγραφή αυτής της μεταφοράς; Θα επανέλθουν τα ποσά στην αρχική τους κατάσταση!')) {
+    return;
+  }
+  
+  const transferIndex = transfers.findIndex(t => t.id === transferId);
+  if (transferIndex !== -1) {
+    const transfer = transfers[transferIndex];
+    
+    // ΑΝΤΙΣΤΡΟΦΗ ΤΗΣ ΜΕΤΑΦΟΡΑΣ
+    if (transfer.from === 'savings') {
+      savings.general += transfer.amount; // Επιστροφή στην αποταμίευση
+      savings.totalUsed -= transfer.amount;
+    }
+    
+    if (transfer.to === 'savings') {
+      savings.general -= transfer.amount; // Αφαίρεση από την αποταμίευση
+      savings.totalAdded -= transfer.amount;
+    }
+    
+    // Διαγραφή
+    transfers.splice(transferIndex, 1);
+    
+    localStorage.setItem('budgetbuddy_transfers', JSON.stringify(transfers));
+    localStorage.setItem('budgetbuddy_savings', JSON.stringify(savings));
+    
+    saveAllData();
+    updateBudgetOverview();
+    updateFinancialOverview();
+    loadTransferUI();
+    
+    showQuickMessage(`🗑️ Διαγράφηκε μεταφορά ${transfer.amount.toFixed(2)}€`, 'success');
+  }
+}
 
 // ==================== ΒΕΛΤΙΩΜΕΝΟΣ ΣΥΓΧΡΟΝΙΣΜΟΣ ====================
 function updateSyncUI(status, data = null) {
@@ -1103,6 +1421,17 @@ function initSync() {
           localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
         }
         
+        // ΝΕΟ: Συγκρίνουμε και τα νέα δεδομένα
+        if (data.transfers) {
+          transfers = data.transfers;
+          localStorage.setItem('budgetbuddy_transfers', JSON.stringify(transfers));
+        }
+        
+        if (data.savings) {
+          savings = data.savings;
+          localStorage.setItem('budgetbuddy_savings', JSON.stringify(savings));
+        }
+        
         syncData.budgetName = data.name || syncData.budgetName;
         syncData.creator = data.creator || syncData.creator;
         syncData.members = data.members || [currentUser];
@@ -1160,6 +1489,22 @@ function updateUIFromSync(data) {
       localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
     }
     
+    // ΝΕΟ: Συγκρίνουμε μεταφορές και αποταμιεύσεις
+    if (data.transfers) {
+      const newTransfers = data.transfers.filter(remote => 
+        !transfers.some(local => local.id === remote.id)
+      );
+      if (newTransfers.length > 0) {
+        transfers = [...transfers, ...newTransfers];
+        localStorage.setItem('budgetbuddy_transfers', JSON.stringify(transfers));
+      }
+    }
+    
+    if (data.savings) {
+      savings = data.savings;
+      localStorage.setItem('budgetbuddy_savings', JSON.stringify(savings));
+    }
+    
     saveAllData();
     updateUIFromData();
   }
@@ -1192,6 +1537,8 @@ function syncToFirebase() {
     recurringAmounts: recurringAmounts,
     bankBalances: bankBalances,
     appBalanceData: appBalanceData,
+    transfers: transfers,
+    savings: savings,
     lastUpdated: Date.now()
   };
   
@@ -1222,6 +1569,8 @@ function createNewBudgetInFirebase() {
     recurringAmounts: recurringAmounts,
     bankBalances: bankBalances,
     appBalanceData: appBalanceData,
+    transfers: transfers,
+    savings: savings,
     lastUpdated: Date.now()
   };
   
@@ -1267,6 +1616,7 @@ function initMonthSelector() {
         updateRecentExpenses();
         updateBudgetOverview();
         updateFinancialOverview();
+        loadTransferUI();
         
         showQuickMessage(`📅 Αλλαγή σε μήνα: ${selectedMonth}`, 'success');
       } else {
@@ -1281,10 +1631,15 @@ function resetCurrentMonth() {
     const expensesToKeep = expenses.filter(expense => !expense.date.startsWith(currentMonth));
     expenses = expensesToKeep;
     
+    // Διαγραφή μεταφορών του μήνα
+    transfers = transfers.filter(t => t.month !== currentMonth);
+    localStorage.setItem('budgetbuddy_transfers', JSON.stringify(transfers));
+    
     saveAllData();
     updateRecentExpenses();
     updateBudgetOverview();
     updateFinancialOverview();
+    loadTransferUI();
     showQuickMessage(`🧹 Εκκαθάριση μήνα ${currentMonth} ολοκληρώθηκε!`, 'success');
   }
 }
@@ -1316,6 +1671,7 @@ function createNewMonth() {
     updateRecentExpenses();
     updateBudgetOverview();
     updateFinancialOverview();
+    loadTransferUI();
   }
 }
 
@@ -1392,10 +1748,8 @@ function setInitialAppBalance() {
   // Αποθηκεύουμε το νέο αρχικό ποσό
   appBalanceData.initialBalance = amount;
   
-  // ΔΕΝ μηδενίζουμε τα έξοδα, διατηρούμε τα υπάρχοντα
-  // appBalanceData.spent παραμένει ως έχει
-  
-  localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
+  // Υπολογίζουμε ξανά τα έξοδα
+  recalculateAppBalanceSpent();
   
   // Συγχρονίζουμε με Firebase
   debouncedSync();
@@ -1434,6 +1788,7 @@ function switchTab(tabNumber) {
   
   if (tabNumber === 2) {
     updateBudgetOverview();
+    loadTransferUI();
   }
   
   if (tabNumber === 3) {
@@ -1838,6 +2193,8 @@ function saveAllData() {
   localStorage.setItem('recurringAmounts', JSON.stringify(recurringAmounts));
   localStorage.setItem('bankBalances', JSON.stringify(bankBalances));
   localStorage.setItem('currentMonth', currentMonth);
+  localStorage.setItem('budgetbuddy_transfers', JSON.stringify(transfers));
+  localStorage.setItem('budgetbuddy_savings', JSON.stringify(savings));
   
   debouncedSync();
 }
@@ -1862,20 +2219,17 @@ function deleteExpense(expenseId) {
   
   const expenseIndex = expenses.findIndex(exp => exp.id === expenseId);
   if (expenseIndex !== -1) {
-    const deletedExpense = expenses[expenseIndex];
     expenses.splice(expenseIndex, 1);
     
-    // Αφαίρεση ποσού από το διαθέσιμο υπόλοιπο εφαρμογής
-    appBalanceData.spent -= deletedExpense.amount;
-    if (appBalanceData.spent < 0) appBalanceData.spent = 0;
-    localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
+    // Υπολογίζουμε ξανά τα συνολικά έξοδα
+    recalculateAppBalanceSpent();
     
     saveAllData();
     updateRecentExpenses();
     updateBudgetOverview();
     updateFinancialOverview();
     
-    showQuickMessage(`🗑️ Διαγράφηκε έξοδο ${deletedExpense.category} - ${deletedExpense.amount.toFixed(2)}€`, 'success');
+    showQuickMessage(`🗑️ Διαγράφηκε έξοδο`, 'success');
   }
 }
 
@@ -1998,16 +2352,11 @@ function deleteCategory(index) {
   
   categories.splice(index, 1);
   
-  // Αφαίρεση ποσών από τα έξοδα και το app balance
-  const deletedExpenses = expenses.filter(e => e.category === categoryName);
-  const totalDeletedAmount = deletedExpenses.reduce((sum, e) => sum + e.amount, 0);
-  
-  // Αφαίρεση από το app balance
-  appBalanceData.spent -= totalDeletedAmount;
-  if (appBalanceData.spent < 0) appBalanceData.spent = 0;
-  localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
-  
+  // Αφαίρεση ποσών από τα έξοδα
   expenses = expenses.filter(e => e.category !== categoryName);
+  
+  // Υπολογίζουμε ξανά τα συνολικά έξοδα
+  recalculateAppBalanceSpent();
   
   if (recurringAmounts[categoryName]) {
     delete recurringAmounts[categoryName];
@@ -2124,9 +2473,9 @@ function addExpense() {
   
   expenses.push(newExpense);
   
-  // Προσθήκη ποσού στο διαθέσιμο υπόλοιπο εφαρμογής
-  appBalanceData.spent += amount;
-  localStorage.setItem('budgetbuddy_app_balance', JSON.stringify(appBalanceData));
+  // 🔴 ΚΡΙΤΙΚΗ ΔΙΟΡΘΩΣΗ: Αντί για appBalanceData.spent += amount;
+  // υπολογίζουμε ξανά τα συνολικά έξοδα
+  recalculateAppBalanceSpent();
   
   document.getElementById('amount').value = '';
   document.getElementById('note').value = '';
@@ -2158,29 +2507,58 @@ function updateBudgetOverview() {
   const budgetCardsDiv = document.getElementById('budgetCards');
   const monthExpenses = expenses.filter(e => e.date.startsWith(currentMonth));
   
+  // ΚΑΡΤΑ ΑΠΟΤΑΜΙΕΥΣΗΣ ΠΡΩΤΗ
+  let html = `
+    <div class="budget-card savings" style="grid-column: 1 / -1;">
+      <h3 style="margin-top: 0; color: #333;">💰 Γενική Αποταμίευση</h3>
+      <div style="text-align: center; margin: 20px 0;">
+        <div style="font-size: 32px; font-weight: bold; color: #ff9800;">${savings.general.toFixed(2)} €</div>
+        <div style="font-size: 12px; color: #666;">Διαθέσιμο για μεταφορές</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+        <div style="text-align: center; padding: 10px; background: #fff8e1; border-radius: 5px;">
+          <div>📈 Προστέθηκε</div>
+          <div style="font-weight: bold; color: #4caf50;">${savings.totalAdded.toFixed(2)}€</div>
+        </div>
+        <div style="text-align: center; padding: 10px; background: #ffebee; border-radius: 5px;">
+          <div>📉 Χρησιμοποιήθηκε</div>
+          <div style="font-weight: bold; color: #f44336;">${savings.totalUsed.toFixed(2)}€</div>
+        </div>
+      </div>
+    </div>
+  `;
+  
   if (categories.length === 0) {
-    budgetCardsDiv.innerHTML = `
+    html += `
       <div class="empty-state" style="grid-column: 1/-1;">
         📂 Δεν υπάρχουν κατηγορίες. Προσθέστε κάποιες από τις ρυθμίσεις!
       </div>
     `;
+    budgetCardsDiv.innerHTML = html;
     return;
   }
   
-  let totalSpent = 0;
-  let totalBudget = 0;
-  
-  let html = '';
-  
+  // ΚΑΤΗΓΟΡΙΕΣ
   categories.forEach(category => {
     const categoryExpenses = monthExpenses.filter(e => e.category === category);
     const categorySpent = categoryExpenses.reduce((sum, e) => sum + e.amount, 0);
     const categoryBudget = recurringAmounts[category] || 0;
-    const remaining = categoryBudget - categorySpent;
-    const percentage = categoryBudget > 0 ? Math.min(100, (categorySpent / categoryBudget) * 100) : 0;
     
-    totalSpent += categorySpent;
-    totalBudget += categoryBudget;
+    // ΥΠΟΛΟΓΙΣΜΟΣ ΜΕΤΑΦΟΡΩΝ
+    const transfersToCategory = transfers.filter(t => 
+      t.month === currentMonth && t.to === category
+    );
+    const transfersFromCategory = transfers.filter(t => 
+      t.month === currentMonth && t.from === category
+    );
+    
+    const totalTransferredIn = transfersToCategory.reduce((sum, t) => sum + t.amount, 0);
+    const totalTransferredOut = transfersFromCategory.reduce((sum, t) => sum + t.amount, 0);
+    
+    // ΕΦΑΡΜΟΓΗ ΜΕΤΑΦΟΡΩΝ ΣΤΟΝ ΠΡΟΥΠΟΛΟΓΙΣΜΟ
+    const adjustedBudget = categoryBudget + totalTransferredIn - totalTransferredOut;
+    const remaining = adjustedBudget - categorySpent;
+    const percentage = adjustedBudget > 0 ? Math.min(100, (categorySpent / adjustedBudget) * 100) : 0;
     
     let statusClass = '';
     if (remaining < 0) {
@@ -2189,13 +2567,22 @@ function updateBudgetOverview() {
       statusClass = 'under';
     }
     
+    // ΚΑΡΤΑ ΚΑΤΗΓΟΡΙΑΣ
     html += `
       <div class="budget-card ${statusClass}">
         <h3 style="margin-top: 0; color: #333;">${category}</h3>
+        
+        ${(totalTransferredIn > 0 || totalTransferredOut > 0) ? `
+          <div style="font-size: 11px; color: #666; margin-bottom: 5px;">
+            ${totalTransferredIn > 0 ? `📥 +${totalTransferredIn.toFixed(2)}€` : ''}
+            ${totalTransferredOut > 0 ? `📤 -${totalTransferredOut.toFixed(2)}€` : ''}
+          </div>
+        ` : ''}
+        
         <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
           <div>
             <div style="font-size: 12px; color: #666;">Προϋπολογισμός</div>
-            <div style="font-weight: bold; color: #333;">${categoryBudget.toFixed(2)} €</div>
+            <div style="font-weight: bold; color: #333;">${adjustedBudget.toFixed(2)} €</div>
           </div>
           <div style="text-align: right;">
             <div style="font-size: 12px; color: #666;">Ξοδεύτηκαν</div>
@@ -2249,7 +2636,13 @@ window.onload = function() {
   initMonthSelector();
   updateFinancialOverview();
   
+  // ΚΡΙΤΙΚΗ ΔΙΟΡΘΩΣΗ: Υπολογίζουμε σωστά τα έξοδα κατά την αρχική φόρτωση
+  recalculateAppBalanceSpent();
+  
   initSync();
+  
+  // ΝΕΟ: Φόρτωση συστήματος μεταφορών
+  loadTransferUI();
   
   document.getElementById('amount').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
